@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: true
+alwaysApply: false
 ---
 # NextJS 스타트킷 프로젝트 가이드
 
@@ -72,7 +72,8 @@ export function Component() {
 - React Hook Form + Zod 조합으로 타입 안전한 폼 구현
 
 ## 개발 명령어
-- 개발 서버: `npm run dev`
-- DB 스튜디오: `npm run db:studio`
-- DB 스키마 적용: `npm run db:push`
-- 프로덕션 빌드: `npm run build`
+- 개발 서버: `bun run dev`
+- DB 스튜디오: `bun run db:studio`
+- DB 스키마 적용: `bun run db:push`
+- 프로덕션 빌드: `bun run build`
+
