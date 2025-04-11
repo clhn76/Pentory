@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 
 // 로그인을 하지 않은 사용자가 접근할 수 없는 페이지
-const protectedRoutes = ["/protected"];
+const protectedRoutes = ["/dashboard"];
 
 export default auth(async (req) => {
   // 로그인 하지 않은 사용자 접근 차단 로직

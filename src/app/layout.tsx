@@ -1,10 +1,32 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Noto_Sans_KR } from "next/font/google";
+import localFont from "next/font/local";
+import { Providers } from "@/components/providers";
+import { cn } from "@/lib/utils";
 
-const notoSansKR = Noto_Sans_KR({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
+const pretendard = localFont({
+  src: [
+    {
+      path: "./fonts/Pretendard-Regular.subset.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Pretendard-Medium.subset.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Pretendard-SemiBold.subset.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Pretendard-Bold.subset.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   display: "swap",
 });
 
@@ -20,7 +42,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${notoSansKR.className} antialiased`}>{children}</body>
+      <body
+        className={cn(pretendard.className, "antialiased")}
+        suppressHydrationWarning
+      >
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

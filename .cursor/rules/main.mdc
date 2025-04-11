@@ -1,79 +1,92 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
-# NextJS 스타트킷 프로젝트 가이드
+## Project Overview
 
-## 프로젝트 개요
-@README.md
+This project is built with NextJS 15+ (React 19) as a comprehensive starter template with modern development tools and libraries.
 
-이 프로젝트는 NextJS 15.2.3 (React 19) 기반 스타터 템플릿으로, 현대적인 웹 애플리케이션 개발을 위한 다양한 도구와 라이브러리를 포함하고 있습니다.
+## Tech Stack
 
-## 주요 기술 스택 및 구조
+- **Framework**: Next.js with App Router
+- **Database**: Drizzle ORM + PostgreSQL
+- **Authentication**: Auth.js (NextAuth v5)
+- **API**: tRPC(v11) + TanStack Query
+- **UI**: shadcn/ui + Tailwind CSS(v4)
+- **Form Management**: React Hook Form + Zod
 
-### 핵심 기술
-- **프레임워크**: Next.js 15.2.3 (App Router)
-- **데이터베이스**: Drizzle ORM + NeonDB (PostgreSQL)
-- **인증**: NextAuth v5 (Auth.js)
-- **API**: tRPC + TanStack Query
-- **UI**: shadcn/ui + Tailwind CSS
-- **폼 관리**: React Hook Form + Zod
+## Project Structure
 
-### 폴더 구조
 ```
 src/
-├── app/                  # Next.js 애플리케이션 라우트
-│   ├── (main)/           # 메인 라우트 그룹
-│   ├── (auth)/           # 인증 관련 라우트
-│   ├── (protected)/      # 인증 보호된 라우트
-│   └── api/              # API 라우트
-├── components/           # 전역 컴포넌트
-│   └── ui/               # UI 컴포넌트 (shadcn/ui)
-├── server/               # 서버 관련 코드
-│   ├── actions/          # 서버 액션
-│   └── trpc/             # tRPC 설정
-├── db/                   # 데이터베이스 관련
-├── auth/                 # 인증 관련 설정
-├── lib/                  # 유틸리티 및 헬퍼 함수
-└── hooks/                # 커스텀 훅
+├── app/                  # Next.js application routes
+│   ├── (landing)/        # Landing page routes
+│   ├── (dashboard)/      # Dashboard routes (protected)
+│   ├── (auth)/           # Authentication routes
+│   ├── api/              # API routes
+│   ├── layout.tsx        # Root layout
+│   └── globals.css       # Global styles
+├── components/           # Reusable components
+│   ├── common/           # Common components
+│   ├── ui/               # UI components (shadcn/ui)
+│   └── icons/            # Icon components
+├── auth/                 # Authentication configuration
+├── trpc/                 # tRPC setup
+│   └── routers/          # tRPC routers and procedures
+├── db/                   # Database schema and configuration
+├── services/             # Service layer
+├── lib/                  # Utility functions
+├── hooks/                # Custom React hooks
+├── configs/              # Configuration files
+└── middleware.ts         # Next.js middleware for auth protection
 ```
 
-## 코드 작성 규칙
+## Coding Conventions
 
-### 컴포넌트 구조
-1. **전역 컴포넌트**: `src/components/` 폴더에 위치하며 애플리케이션 전체에서 재사용
-2. **로컬 컴포넌트**: 각 라우트 폴더 내의 `_components/` 폴더에 위치하며 해당 라우트에 특화됨
+### Component Organization
+1. **Global Components**: Located in `src/components/` for application-wide reuse
+2. **Route-specific Components**: Should be placed in `_components/` folders within respective route directories
 
-### shadcn/ui 컴포넌트 사용
+### Using shadcn/ui Components
 ```tsx
-// 컴포넌트 사용 예시
+// Component usage example
 import { Button } from "@/components/ui/button";
 
 export function Component() {
   return (
     <Button variant="outline" size="lg">
-      버튼 텍스트
+      Button Text
     </Button>
   );
 }
 ```
 
-### tRPC API 패턴
-- `src/server/trpc/` 디렉토리에 라우터와 프로시저 정의
-- 클라이언트에서는 `trpc.xxx.yyy.useQuery()` 형태로 호출
+### tRPC API Pattern
+- Define routers and procedures in `src/trpc/routers/`
+```tsx
+// tRPC usage example
+import { useQuery } from '@tanstack/react-query';
+import { useTRPC } from './trpc';
+function Users() {
+  const trpc = useTRPC();
+  const greetingQuery = useQuery(trpc.greeting.queryOptions({ name: 'Jerry' }));
+  // greetingQuery.data === 'Hello Jerry'
+}
+```
 
-### 인증 관련
-- NextAuth v5 사용
-- 보호된 라우트는 `(protected)` 그룹 내에 위치
-- 미들웨어를 통한 경로 보호
+### Authentication
+- Using Auth.js (NextAuth v5)
+- Protected routes in the `(dashboard)` group
+- Route protection via middleware
 
-### 폼 관리
-- React Hook Form + Zod 조합으로 타입 안전한 폼 구현
+### Form Handling
+- Implement type-safe forms with React Hook Form + Zod validation
 
-## 개발 명령어
-- 개발 서버: `bun run dev`
-- DB 스튜디오: `bun run db:studio`
-- DB 스키마 적용: `bun run db:push`
-- 프로덕션 빌드: `bun run build`
+## Authentication Flow
 
+The middleware.ts file protects specific routes (like `/dashboard`) from unauthorized access. Users who are not logged in will be redirected to the sign-in page.
+
+## Development Commands
+- Development server: `npm run dev` or `bun run dev`
+- Production build: `npm run build` or `bun run build`

@@ -1,6 +1,8 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
+  jsonb,
   pgTable,
   primaryKey,
   text,
@@ -9,8 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
-// 현재 작성된 테이블은 next-auth 연결을 위해 필요한 기본 테이블을 직접 정교하게 다듬어서 작성하였습니다.
-// 현재 작성된 필드는 next-auth 로그인 기능에 필요하기에 삭제는 하지 마시고 필요한 필드만 추가하시면 됩니다.
+// ************************ Auth ************************
 
 export const userTable = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -21,6 +22,12 @@ export const userTable = pgTable("user", {
     withTimezone: true,
   }),
   image: text("image"),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
 });
 
 export const accountTable = pgTable(
@@ -53,7 +60,7 @@ export const sessionTable = pgTable("session", {
   userId: uuid("userId")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
+  expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
 });
 
 export const verificationTokenTable = pgTable(
@@ -61,7 +68,10 @@ export const verificationTokenTable = pgTable(
   {
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    expires: timestamp("expires", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
   },
   (verificationToken) => [
     {
@@ -94,3 +104,304 @@ export const authenticatorTable = pgTable(
     },
   ]
 );
+
+// ************************ Payment ************************
+
+export const paymentMethodTable = pgTable("payment_method", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" })
+    .unique(),
+  billingKey: text("billing_key").notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
+
+export type PlanBillingCycle = "MONTH" | "YEAR";
+export type PlanFeatures = {
+  maxSpaceCount: number;
+  maxSourceCount: number;
+};
+export const planTable = pgTable("plan", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  price: integer("price").notNull(),
+  billingCycle: text("billing_cycle").$type<PlanBillingCycle>().notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  features: jsonb("features").$type<PlanFeatures>().notNull(),
+  tier: integer("tier").notNull(), // 플랜 변경시 업그레이드, 다운그레이드 결정하는 기준 (높을수록 상위 티어)
+  isDisplay: boolean("is_display").notNull().default(true),
+});
+
+export type SubscriptionStatus =
+  | "ACTIVE"
+  | "PAST_DUE"
+  | "CANCELLED"
+  | "CANCEL_PENDING"
+  | "CHANGE_PENDING";
+// 유저의 현재 구독 정보
+export const subscriptionTable = pgTable("subscription", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" })
+    .unique(),
+  planId: uuid("planId")
+    .notNull()
+    .references(() => planTable.id),
+  status: text("status").$type<SubscriptionStatus>().notNull(),
+  // 최초 구독 생성일
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  // 현재 플랜 시작일
+  startAt: timestamp("start_at", {
+    mode: "date",
+    withTimezone: true,
+  }).notNull(),
+  // 현재 플랜 종료일
+  endAt: timestamp("end_at", {
+    mode: "date",
+    withTimezone: true,
+  }).notNull(),
+});
+
+export type SubscriptionScheduleType = "CANCEL" | "CHANGE";
+// 유저 구독 스케쥴
+export const subscriptionScheduleTable = pgTable("subscription_schedule", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" })
+    .unique(),
+  type: text("type").$type<SubscriptionScheduleType>().notNull(),
+  fromPlanId: uuid("from_plan_id").references(() => planTable.id),
+  toPlanId: uuid("to_plan_id").references(() => planTable.id),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  scheduledAt: timestamp("scheduled_at", {
+    mode: "date",
+    withTimezone: true,
+  }).notNull(),
+});
+
+export type PaymentStatus = "SUBSCRIBE_PAID" | "UPGRADE_PAID" | "FAILED";
+export const paymentTable = pgTable("payment", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => userTable.id),
+  amount: integer("amount").notNull(),
+  status: text("status").$type<PaymentStatus>().notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  scheduledAt: timestamp("scheduled_at", {
+    mode: "date",
+    withTimezone: true,
+  }),
+});
+
+// ************************ Space ************************
+
+export type SpaceSummaryStyle = "DEFAULT" | "CUSTOM";
+export const spaceTable = pgTable("space", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  summaryStyle: text("summary_style")
+    .$type<SpaceSummaryStyle>()
+    .default("DEFAULT"),
+  customPrompt: text("custom_prompt"),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
+
+export type SpaceSourceType = "YOUTUBE_CHANNEL" | "RSS_FEED";
+export const spaceSourceTable = pgTable("space_source", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  spaceId: uuid("spaceId")
+    .notNull()
+    .references(() => spaceTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  type: text("type").$type<SpaceSourceType>().notNull(),
+  channelId: text("channel_id"),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
+
+// ************************ Relation ************************
+
+// User Relations
+export const userRelations = relations(userTable, ({ many, one }) => ({
+  accounts: many(accountTable),
+  sessions: many(sessionTable),
+  authenticators: many(authenticatorTable),
+  paymentMethod: one(paymentMethodTable, {
+    fields: [userTable.id],
+    references: [paymentMethodTable.userId],
+  }),
+  subscription: one(subscriptionTable, {
+    fields: [userTable.id],
+    references: [subscriptionTable.userId],
+  }),
+  subscriptionSchedules: one(subscriptionScheduleTable, {
+    fields: [userTable.id],
+    references: [subscriptionScheduleTable.userId],
+  }),
+  payments: many(paymentTable),
+  spaces: many(spaceTable),
+}));
+
+// Account Relations
+export const accountRelations = relations(accountTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [accountTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
+// Session Relations
+export const sessionRelations = relations(sessionTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [sessionTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
+// Authenticator Relations
+export const authenticatorRelations = relations(
+  authenticatorTable,
+  ({ one }) => ({
+    user: one(userTable, {
+      fields: [authenticatorTable.userId],
+      references: [userTable.id],
+    }),
+  })
+);
+
+// Payment Method Relations
+export const paymentMethodRelations = relations(
+  paymentMethodTable,
+  ({ one }) => ({
+    user: one(userTable, {
+      fields: [paymentMethodTable.userId],
+      references: [userTable.id],
+    }),
+  })
+);
+
+// Plan Relations
+export const planRelations = relations(planTable, ({ many }) => ({
+  subscriptions: many(subscriptionTable),
+  fromSubscriptionSchedules: many(subscriptionScheduleTable, {
+    relationName: "fromPlan",
+  }),
+  toSubscriptionSchedules: many(subscriptionScheduleTable, {
+    relationName: "toPlan",
+  }),
+}));
+
+// Subscription Relations
+export const subscriptionRelations = relations(
+  subscriptionTable,
+  ({ one }) => ({
+    user: one(userTable, {
+      fields: [subscriptionTable.userId],
+      references: [userTable.id],
+    }),
+    plan: one(planTable, {
+      fields: [subscriptionTable.planId],
+      references: [planTable.id],
+    }),
+  })
+);
+
+// Subscription Schedule Relations
+export const subscriptionScheduleRelations = relations(
+  subscriptionScheduleTable,
+  ({ one }) => ({
+    user: one(userTable, {
+      fields: [subscriptionScheduleTable.userId],
+      references: [userTable.id],
+    }),
+    fromPlan: one(planTable, {
+      fields: [subscriptionScheduleTable.fromPlanId],
+      references: [planTable.id],
+      relationName: "fromPlan",
+    }),
+    toPlan: one(planTable, {
+      fields: [subscriptionScheduleTable.toPlanId],
+      references: [planTable.id],
+      relationName: "toPlan",
+    }),
+  })
+);
+
+// Payment Relations
+export const paymentRelations = relations(paymentTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [paymentTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
+// Space Relations
+export const spaceRelations = relations(spaceTable, ({ one, many }) => ({
+  user: one(userTable, {
+    fields: [spaceTable.userId],
+    references: [userTable.id],
+  }),
+  sources: many(spaceSourceTable),
+}));
+
+// Space Source Relations
+export const spaceSourceRelations = relations(spaceSourceTable, ({ one }) => ({
+  space: one(spaceTable, {
+    fields: [spaceSourceTable.spaceId],
+    references: [spaceTable.id],
+  }),
+}));
