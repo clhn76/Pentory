@@ -63,7 +63,7 @@ const summaryStyleOptions = [
   },
 ];
 
-type SpaceFormValues = z.infer<typeof spaceFormSchema>;
+export type SpaceFormValues = z.infer<typeof spaceFormSchema>;
 
 interface SpaceFormProps {
   space?: inferRouterOutputs<AppRouter>["spaceRouter"]["getSpaceById"];
