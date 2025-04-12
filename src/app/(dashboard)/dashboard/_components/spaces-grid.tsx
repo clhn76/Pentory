@@ -1,12 +1,9 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Calendar } from "lucide-react";
-import Link from "next/link";
 import { SpaceItem } from "./space-item";
 
 export const SpacesGrid = () => {
