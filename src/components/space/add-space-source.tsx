@@ -4,12 +4,12 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { NewSpaceFormValues } from "../page";
+import { SpaceFormValues } from "./space-form";
 
 interface AddSpaceSourceProps {
-  sources: NewSpaceFormValues["sources"];
+  sources: SpaceFormValues["sources"];
   maxSourceCount: number;
-  onAddSource: (source: NewSpaceFormValues["sources"][number]) => void;
+  onAddSource: (source: SpaceFormValues["sources"][number]) => void;
 }
 
 export const AddSpaceSource = ({
