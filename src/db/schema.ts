@@ -259,12 +259,31 @@ export const spaceTable = pgTable("space", {
 export type SpaceSourceType = "YOUTUBE_CHANNEL" | "RSS_FEED";
 export const spaceSourceTable = pgTable("space_source", {
   id: uuid("id").primaryKey().defaultRandom(),
+  url: text("url").notNull(),
   spaceId: uuid("spaceId")
     .notNull()
     .references(() => spaceTable.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   type: text("type").$type<SpaceSourceType>().notNull(),
   channelId: text("channel_id"),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
+
+export const spaceSummaryTable = pgTable("space_summary", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  spaceId: uuid("spaceId")
+    .notNull()
+    .references(() => spaceTable.id, { onDelete: "cascade" }),
+  spaceSourceId: uuid("spaceSourceId")
+    .notNull()
+    .references(() => spaceSourceTable.id),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true,
@@ -396,6 +415,7 @@ export const spaceRelations = relations(spaceTable, ({ one, many }) => ({
     references: [userTable.id],
   }),
   sources: many(spaceSourceTable),
+  summaries: many(spaceSummaryTable),
 }));
 
 // Space Source Relations
@@ -405,3 +425,18 @@ export const spaceSourceRelations = relations(spaceSourceTable, ({ one }) => ({
     references: [spaceTable.id],
   }),
 }));
+
+// Space Summary Relations
+export const spaceSummaryRelations = relations(
+  spaceSummaryTable,
+  ({ one }) => ({
+    space: one(spaceTable, {
+      fields: [spaceSummaryTable.spaceId],
+      references: [spaceTable.id],
+    }),
+    spaceSource: one(spaceSourceTable, {
+      fields: [spaceSummaryTable.spaceSourceId],
+      references: [spaceSourceTable.id],
+    }),
+  })
+);

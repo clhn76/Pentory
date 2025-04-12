@@ -7,7 +7,7 @@ import {
   subscriptionTable,
 } from "@/db/schema";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import { z } from "zod";
 
@@ -23,6 +23,23 @@ export const spaceRouter = createTRPCRouter({
     return spaces;
   }),
 
+  getSpaceById: protectedProcedure
+    .input(z.object({ spaceId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { spaceId } = input;
+      const { user } = ctx;
+
+      const space = await db.query.spaceTable.findFirst({
+        with: {
+          sources: true,
+          summaries: true,
+        },
+        where: and(eq(spaceTable.id, spaceId), eq(spaceTable.userId, user.id)),
+      });
+
+      return space;
+    }),
+
   createSpace: protectedProcedure
     .input(
       z.object({
@@ -35,7 +52,7 @@ export const spaceRouter = createTRPCRouter({
             url: z.string(),
             type: z.enum(["YOUTUBE_CHANNEL", "RSS_FEED"]),
             name: z.string(),
-            channelId: z.string().optional(),
+            channelId: z.string().optional().nullable(),
           })
         ),
       })
@@ -84,6 +101,7 @@ export const spaceRouter = createTRPCRouter({
           await tx.insert(spaceSourceTable).values(
             sources.map((source) => ({
               spaceId: newSpace.id,
+              url: source.url,
               name: source.name,
               type: source.type,
               channelId: source.channelId,
@@ -92,6 +110,89 @@ export const spaceRouter = createTRPCRouter({
         }
 
         return newSpace;
+      });
+    }),
+
+  updateSpace: protectedProcedure
+    .input(
+      z.object({
+        spaceId: z.string(),
+        name: z.string(),
+        description: z.string().optional(),
+        summaryStyle: z.enum(["DEFAULT", "CUSTOM"]),
+        customPrompt: z.string().optional(),
+        sources: z.array(
+          z.object({
+            url: z.string(),
+            type: z.enum(["YOUTUBE_CHANNEL", "RSS_FEED"]),
+            name: z.string(),
+            channelId: z.string().optional().nullable(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { user } = ctx;
+      const {
+        spaceId,
+        name,
+        description,
+        summaryStyle,
+        customPrompt,
+        sources,
+      } = input;
+
+      //  사용자 플랜 정보 조회
+      const [{ plan }] = await db
+        .select({
+          plan: planTable,
+        })
+        .from(subscriptionTable)
+        .leftJoin(planTable, eq(subscriptionTable.planId, planTable.id))
+        .where(eq(subscriptionTable.userId, user.id));
+
+      const maxSourceCount =
+        plan?.features.maxSourceCount || FREE_PLAN.maxSourceCount;
+
+      if (sources.length > maxSourceCount) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "현재 플랜의 소스 개수가 초과되었습니다.",
+        });
+      }
+
+      // 트랜잭션 시작
+      return await db.transaction(async (tx) => {
+        // 스페이스 업데이트
+        await tx
+          .update(spaceTable)
+          .set({
+            name,
+            description,
+            summaryStyle,
+            customPrompt,
+          })
+          .where(
+            and(eq(spaceTable.id, spaceId), eq(spaceTable.userId, user.id))
+          );
+
+        // 스페이스 소스 업데이트
+        await tx
+          .delete(spaceSourceTable)
+          .where(eq(spaceSourceTable.spaceId, spaceId));
+
+        // 새로운 소스 추가
+        if (sources.length > 0) {
+          await tx.insert(spaceSourceTable).values(
+            sources.map((source) => ({
+              spaceId,
+              url: source.url,
+              name: source.name,
+              type: source.type,
+              channelId: source.channelId,
+            }))
+          );
+        }
       });
     }),
 });
