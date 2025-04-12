@@ -1,8 +1,13 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Calendar } from "lucide-react";
+import Link from "next/link";
+import { SpaceItem } from "./space-item";
 
 export const SpacesGrid = () => {
   const trpc = useTRPC();
@@ -20,19 +25,26 @@ export const SpacesGrid = () => {
   }
 
   return (
-    <div className="grid gap-4 grid-cols-1  md:grid-cols-2 lg:grid-cols-3">
-      {spaces.map((item) => (
-        <div key={item.id}>{item.name}</div>
-      ))}
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <Badge variant="outline" className="px-3 py-1">
+          총 {spaces.length}개의 스페이스
+        </Badge>
+      </div>
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {spaces.map((space) => (
+          <SpaceItem key={space.id} space={space} />
+        ))}
+      </div>
     </div>
   );
 };
 
 export const SpacesGridSkeleton = () => {
   return (
-    <div className="grid gap-4 grid-cols-1  md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 9 }).map((_, index) => (
-        <Skeleton key={index} className="h-[120px] rounded-md" />
+        <Skeleton key={index} className="h-[160px] rounded-xl" />
       ))}
     </div>
   );
