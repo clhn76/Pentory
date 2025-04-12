@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   prefetch(trpc.userRouter.getUserInfo.queryOptions());
+  prefetch(trpc.spaceRouter.getSpaces.queryOptions());
 
   return (
     <HydrateClient>

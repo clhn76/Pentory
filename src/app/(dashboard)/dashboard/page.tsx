@@ -1,17 +1,10 @@
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
 import { MySpaces } from "./_components/my-spaces";
 
-export const dynamic = "force-dynamic";
-
-const DashboardPage = async () => {
-  prefetch(trpc.spaceRouter.getSpaces.queryOptions());
-
+const DashboardPage = () => {
   return (
-    <HydrateClient>
-      <div className="container">
-        <MySpaces />
-      </div>
-    </HydrateClient>
+    <div className="container">
+      <MySpaces />
+    </div>
   );
 };
 
