@@ -7,9 +7,9 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import type { AdapterAccountType } from "next-auth/adapters";
 
 // ************************ Auth ************************
 
@@ -36,7 +36,7 @@ export const accountTable = pgTable(
     userId: uuid("userId")
       .notNull()
       .references(() => userTable.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccountType>().notNull(),
+    type: text("type").notNull(),
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
@@ -257,22 +257,34 @@ export const spaceTable = pgTable("space", {
 });
 
 export type SpaceSourceType = "YOUTUBE_CHANNEL" | "RSS_FEED";
-export const spaceSourceTable = pgTable("space_source", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  url: text("url").notNull(),
-  spaceId: uuid("spaceId")
-    .notNull()
-    .references(() => spaceTable.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  type: text("type").$type<SpaceSourceType>().notNull(),
-  channelId: text("channel_id"),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-    withTimezone: true,
-  })
-    .notNull()
-    .defaultNow(),
-});
+export const spaceSourceTable = pgTable(
+  "space_source",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    url: text("url").notNull(),
+    spaceId: uuid("spaceId")
+      .notNull()
+      .references(() => spaceTable.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    type: text("type").$type<SpaceSourceType>().notNull(),
+    channelId: text("channel_id"),
+    createdAt: timestamp("created_at", {
+      mode: "date",
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    isActive: boolean("is_active").notNull().default(true),
+  },
+  (table) => {
+    return {
+      uniqueSpaceIdUrl: uniqueIndex("unique_space_id_url").on(
+        table.spaceId,
+        table.url
+      ),
+    };
+  }
+);
 
 export const spaceSummaryTable = pgTable("space_summary", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -281,15 +293,17 @@ export const spaceSummaryTable = pgTable("space_summary", {
     .references(() => spaceTable.id, { onDelete: "cascade" }),
   spaceSourceId: uuid("spaceSourceId")
     .notNull()
-    .references(() => spaceSourceTable.id),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
+    .references(() => spaceSourceTable.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  content: text("content"),
+  thumbnailUrl: text("thumbnail_url"),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true,
   })
     .notNull()
     .defaultNow(),
+  isFailed: boolean("is_failed").notNull().default(false),
 });
 
 // ************************ Relation ************************
@@ -419,12 +433,16 @@ export const spaceRelations = relations(spaceTable, ({ one, many }) => ({
 }));
 
 // Space Source Relations
-export const spaceSourceRelations = relations(spaceSourceTable, ({ one }) => ({
-  space: one(spaceTable, {
-    fields: [spaceSourceTable.spaceId],
-    references: [spaceTable.id],
-  }),
-}));
+export const spaceSourceRelations = relations(
+  spaceSourceTable,
+  ({ one, many }) => ({
+    space: one(spaceTable, {
+      fields: [spaceSourceTable.spaceId],
+      references: [spaceTable.id],
+    }),
+    summaries: many(spaceSummaryTable),
+  })
+);
 
 // Space Summary Relations
 export const spaceSummaryRelations = relations(

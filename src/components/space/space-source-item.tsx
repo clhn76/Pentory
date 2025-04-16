@@ -1,13 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { SpaceSourceType } from "@/db/schema";
-import { XIcon } from "lucide-react";
+import { CheckIcon, EditIcon, XIcon } from "lucide-react";
+import { useState } from "react";
 
 interface SpaceSourceItemProps {
   type: SpaceSourceType;
   name: string;
   url: string;
   onRemove: () => void;
+  onNameChange: (newName: string) => void;
 }
 
 export const SpaceSourceItem = ({
@@ -15,7 +18,23 @@ export const SpaceSourceItem = ({
   name,
   url,
   onRemove,
+  onNameChange,
 }: SpaceSourceItemProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(name);
+
+  const handleSave = () => {
+    if (editedName.trim() !== "") {
+      onNameChange(editedName);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditedName(name);
+    setIsEditing(false);
+  };
+
   return (
     <div className="relative space-y-1 bg-muted/50 rounded-lg px-4 py-3">
       <Button
@@ -29,7 +48,50 @@ export const SpaceSourceItem = ({
       </Button>
 
       <div className="flex items-center gap-2 justify-between">
-        <p className="text-sm font-medium">{name}</p>
+        {isEditing ? (
+          <div className="flex gap-2 items-center flex-1">
+            <Input
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              className="h-8 text-sm"
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              autoFocus
+            />
+            <div className="flex gap-1">
+              <Button
+                onClick={handleSave}
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+              >
+                <CheckIcon className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                onClick={handleCancel}
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+              >
+                <XIcon className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium">{name}</p>
+            <Button
+              onClick={() => setIsEditing(true)}
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+            >
+              <EditIcon className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
 
         <Badge variant="outline">
           {type === "YOUTUBE_CHANNEL" ? "Youtube Channel" : "RSS Feed"}

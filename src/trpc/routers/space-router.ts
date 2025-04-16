@@ -3,13 +3,14 @@ import { db } from "@/db";
 import {
   planTable,
   spaceSourceTable,
+  spaceSummaryTable,
   spaceTable,
   subscriptionTable,
 } from "@/db/schema";
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure } from "../init";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "../init";
 
 export const spaceRouter = createTRPCRouter({
   getSpaces: protectedProcedure.query(async ({ ctx }) => {
@@ -31,8 +32,21 @@ export const spaceRouter = createTRPCRouter({
 
       const space = await db.query.spaceTable.findFirst({
         with: {
-          sources: true,
-          summaries: true,
+          sources: {
+            where: eq(spaceSourceTable.isActive, true),
+            orderBy: desc(spaceSourceTable.createdAt),
+          },
+          summaries: {
+            orderBy: desc(spaceSummaryTable.createdAt),
+            with: {
+              spaceSource: {
+                columns: {
+                  name: true,
+                },
+              },
+            },
+            where: eq(spaceSummaryTable.isFailed, false),
+          },
         },
         where: and(eq(spaceTable.id, spaceId), eq(spaceTable.userId, user.id)),
       });
@@ -70,6 +84,8 @@ export const spaceRouter = createTRPCRouter({
         .leftJoin(planTable, eq(subscriptionTable.planId, planTable.id))
         .where(eq(subscriptionTable.userId, user.id));
 
+      // 사용자의 현재 플랜 & 소스 정보 조회
+
       const maxSourceCount =
         plan?.features.maxSourceCount || FREE_PLAN.maxSourceCount;
 
@@ -98,6 +114,7 @@ export const spaceRouter = createTRPCRouter({
 
         // 스페이스 소스 생성
         if (sources.length > 0) {
+          // 신규 스페이스이므로 모든 소스가 신규 소스임
           await tx.insert(spaceSourceTable).values(
             sources.map((source) => ({
               spaceId: newSpace.id,
@@ -105,8 +122,12 @@ export const spaceRouter = createTRPCRouter({
               name: source.name,
               type: source.type,
               channelId: source.channelId,
+              isActive: true,
             }))
           );
+
+          // 신규 스페이스에 소스가 있으면 요약 요청
+          runLambdaSpaceSummary(newSpace.id);
         }
 
         return newSpace;
@@ -176,23 +197,68 @@ export const spaceRouter = createTRPCRouter({
             and(eq(spaceTable.id, spaceId), eq(spaceTable.userId, user.id))
           );
 
-        // 스페이스 소스 업데이트
+        // 기존 소스 비활성 처리
         await tx
-          .delete(spaceSourceTable)
+          .update(spaceSourceTable)
+          .set({
+            isActive: false,
+          })
           .where(eq(spaceSourceTable.spaceId, spaceId));
 
         // 새로운 소스 추가
         if (sources.length > 0) {
-          await tx.insert(spaceSourceTable).values(
-            sources.map((source) => ({
-              spaceId,
-              url: source.url,
-              name: source.name,
-              type: source.type,
-              channelId: source.channelId,
-            }))
+          // 기존 소스 URL 목록 조회
+          const existingSources = await tx
+            .select({ url: spaceSourceTable.url })
+            .from(spaceSourceTable)
+            .where(eq(spaceSourceTable.spaceId, spaceId));
+
+          const existingUrls = new Set(
+            existingSources.map((source) => source.url)
           );
+
+          // 신규 소스 확인
+          const newSources = sources.filter(
+            (source) => !existingUrls.has(source.url)
+          );
+
+          // 소스 추가
+          await tx
+            .insert(spaceSourceTable)
+            .values(
+              sources.map((source) => ({
+                spaceId,
+                url: source.url,
+                name: source.name,
+                type: source.type,
+                channelId: source.channelId,
+                isActive: true,
+              }))
+            )
+            .onConflictDoUpdate({
+              target: [spaceSourceTable.spaceId, spaceSourceTable.url],
+              set: {
+                isActive: true,
+                name: sql`excluded.name`,
+              },
+            });
+
+          // 신규 소스가 있는 경우에만 요약 요청
+          if (newSources.length > 0) {
+            runLambdaSpaceSummary(spaceId);
+          }
         }
       });
     }),
 });
+
+// Lambda에 요약 요청
+const runLambdaSpaceSummary = (spaceId: string) => {
+  fetch(`${process.env.LAMBDA_URL}/summary/space`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ spaceId }),
+  });
+};
