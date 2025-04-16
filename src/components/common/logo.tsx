@@ -7,7 +7,7 @@ interface LogoProps {
 export const Logo = ({ href }: LogoProps) => {
   return (
     <Link href={href ?? "/"} className="text-xl font-semibold px-2">
-      Logo
+      Pentory
     </Link>
   );
 };

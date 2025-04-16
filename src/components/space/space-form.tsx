@@ -172,7 +172,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
 
   const handleAddSource = useCallback(
     (source: SpaceFormValues["sources"][number]) => {
-      form.setValue("sources", [...form.getValues("sources"), source], {
+      form.setValue("sources", [source, ...form.getValues("sources")], {
         shouldDirty: true,
       });
     },
@@ -188,6 +188,26 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
           shouldDirty: true,
         }
       );
+    },
+    [form]
+  );
+
+  const handleUpdateSourceName = useCallback(
+    (url: string, newName: string) => {
+      const sources = form.getValues("sources");
+      const updatedSources = sources.map((source) => {
+        if (source.url === url) {
+          return {
+            ...source,
+            name: newName,
+          };
+        }
+        return source;
+      });
+
+      form.setValue("sources", updatedSources, {
+        shouldDirty: true,
+      });
     },
     [form]
   );
@@ -335,6 +355,9 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
                     name={source.name}
                     url={source.url}
                     onRemove={() => handleRemoveSource(source.url)}
+                    onNameChange={(newName) =>
+                      handleUpdateSourceName(source.url, newName)
+                    }
                   />
                 ))}
               </section>

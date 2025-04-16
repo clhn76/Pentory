@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+/serverless-api/node_modules
+/serverless-api/dist
+/serverless-api/lambda.zip
 /.pnp
 .pnp.*
 .yarn/*
