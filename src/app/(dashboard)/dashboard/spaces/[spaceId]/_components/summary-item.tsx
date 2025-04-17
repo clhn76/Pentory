@@ -1,11 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import Image from "next/image";
-import { marked } from "marked";
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { useArticleDialogStore } from "@/components/dialogs/article-dialog/store";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
+import { marked } from "marked";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface SummaryItemProps {
   id: string;
@@ -25,6 +26,8 @@ export const SummaryItem = ({
 }: SummaryItemProps) => {
   const [heading, setTitle] = useState<string>("");
   const [paragraph, setParagraph] = useState<string>("");
+
+  const { openDialog } = useArticleDialogStore();
 
   useEffect(() => {
     const parseMarkdown = async () => {
@@ -49,10 +52,26 @@ export const SummaryItem = ({
     parseMarkdown();
   }, [content]);
 
+  const handleClick = () => {
+    openDialog({
+      content: content || "",
+      source: {
+        name: sourceName,
+        url: url,
+      },
+      thumbnailUrl: thumbnailUrl || "",
+      createdAt: createdAt,
+    });
+  };
+
   return (
-    <Card className="pt-0 overflow-clip">
+    <Card
+      className="pt-0 overflow-clip cursor-pointer hover:scale-[102%] transition-all duration-300 gap-4"
+      onClick={handleClick}
+    >
       <div className="relative w-full aspect-video">
         <Image
+          className="w-full object-cover pointer-events-none"
           fill
           unoptimized
           src={thumbnailUrl || "/placeholder.jpg"}
@@ -60,19 +79,28 @@ export const SummaryItem = ({
             e.currentTarget.src = "/placeholder.jpg";
           }}
           alt={heading || url}
-          className="w-full object-cover"
         />
       </div>
-      <CardContent className="prose prose-invert prose-sm">
-        {heading && <h3 className="font-bold mb-2 line-clamp-2">{heading}</h3>}
-        {paragraph && <p className="line-clamp-4">{paragraph}</p>}
+      <CardContent className="h-full flex flex-col px-4 md:px-5">
+        <div className="flex-1">
+          {heading && (
+            <h3 className="text-lg tracking-tight font-bold mb-2 line-clamp-2">
+              {heading}
+            </h3>
+          )}
+          {paragraph && (
+            <p className="text-sm text-muted-foreground line-clamp-5">
+              {paragraph}
+            </p>
+          )}
+        </div>
+        <div className="flex justify-between items-center mt-6">
+          <Badge variant="outline">{sourceName}</Badge>
+          <p className="text-sm text-muted-foreground">
+            {format(createdAt, "yyyy-MM-dd")}
+          </p>
+        </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Badge variant="outline">{sourceName}</Badge>
-        <p className="text-sm text-muted-foreground">
-          {format(createdAt, "yyyy-MM-dd")}
-        </p>
-      </CardFooter>
     </Card>
   );
 };
