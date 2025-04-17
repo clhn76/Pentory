@@ -76,7 +76,7 @@ export const spaceRouter = createTRPCRouter({
       const { name, description, summaryStyle, customPrompt, sources } = input;
 
       //  사용자 플랜 정보 조회
-      const [{ plan }] = await db
+      const planResult = await db
         .select({
           plan: planTable,
         })
@@ -84,10 +84,12 @@ export const spaceRouter = createTRPCRouter({
         .leftJoin(planTable, eq(subscriptionTable.planId, planTable.id))
         .where(eq(subscriptionTable.userId, user.id));
 
-      // 사용자의 현재 플랜 & 소스 정보 조회
+      // 사용자의 플랜 정보가 없는 경우 FREE_PLAN 사용
+      const plan = planResult.length > 0 ? planResult[0].plan : null;
 
+      // 사용자의 현재 플랜 & 소스 정보 조회
       const maxSourceCount =
-        plan?.features.maxSourceCount || FREE_PLAN.maxSourceCount;
+        plan?.features?.maxSourceCount || FREE_PLAN.maxSourceCount;
 
       if (sources.length > maxSourceCount) {
         throw new TRPCError({
@@ -164,7 +166,7 @@ export const spaceRouter = createTRPCRouter({
       } = input;
 
       //  사용자 플랜 정보 조회
-      const [{ plan }] = await db
+      const planResult = await db
         .select({
           plan: planTable,
         })
@@ -172,8 +174,12 @@ export const spaceRouter = createTRPCRouter({
         .leftJoin(planTable, eq(subscriptionTable.planId, planTable.id))
         .where(eq(subscriptionTable.userId, user.id));
 
+      // 사용자의 플랜 정보가 없는 경우 FREE_PLAN 사용
+      const plan = planResult.length > 0 ? planResult[0].plan : null;
+
+      // 사용자의 현재 플랜 & 소스 정보 조회
       const maxSourceCount =
-        plan?.features.maxSourceCount || FREE_PLAN.maxSourceCount;
+        plan?.features?.maxSourceCount || FREE_PLAN.maxSourceCount;
 
       if (sources.length > maxSourceCount) {
         throw new TRPCError({
