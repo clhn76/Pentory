@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export const Header = () => {
   return (
-    <header className="flex items-center justify-between border bg-input/50 sticky top-2 max-w-screen-lg mx-auto rounded-full py-2 px-3">
+    <header className="z-50 backdrop-blur-md flex items-center justify-between border bg-input/50 sticky top-2 max-w-screen-lg mx-auto rounded-full py-2 px-3">
       <Logo />
       <nav className="flex items-center gap-2">
         {LANDING_NAVS.map((item) => (

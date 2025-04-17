@@ -317,8 +317,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
                           <Textarea
                             placeholder="원하는 요약 스타일을 자유롭게 작성하세요"
                             {...field}
-                            rows={4}
-                            className="resize-none"
+                            className="min-h-[250px]"
                           />
                         </FormControl>
                         <FormDescription>

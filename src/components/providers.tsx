@@ -6,6 +6,7 @@ import { Toaster } from "./ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { GlobalAlertDialog } from "./dialogs/global-alert-dialog";
 import { useIsMounted } from "@/hooks/use-is-mounted";
+import { ArticleDialog } from "./dialogs/article-dialog";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ export const Providers = ({ children }: ProvidersProps) => {
         <NuqsAdapter>
           {children}
           <GlobalAlertDialog />
+          <ArticleDialog />
           <Toaster />
         </NuqsAdapter>
       </TRPCReactProvider>
