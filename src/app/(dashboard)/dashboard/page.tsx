@@ -1,11 +1,5 @@
-import { MySpaces } from "./_components/my-spaces";
+import { DashboardHomePage } from "@/modules/dashboard/ui/pages/dashboard-home-page";
 
-const DashboardPage = () => {
-  return (
-    <div className="container">
-      <MySpaces />
-    </div>
-  );
-};
-
-export default DashboardPage;
+export default function DashboardPage() {
+  return <DashboardHomePage />;
+}

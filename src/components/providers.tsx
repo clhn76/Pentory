@@ -2,11 +2,11 @@
 
 import { TRPCReactProvider } from "@/trpc/client";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "./ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { GlobalAlertDialog } from "./dialogs/global-alert-dialog";
+import { ArticleDialog } from "../modules/dialog/components/article-dialog";
+import { GlobalAlertDialog } from "../modules/dialog/components/global-alert-dialog";
+import { Toaster } from "./ui/sonner";
 import { useIsMounted } from "@/hooks/use-is-mounted";
-import { ArticleDialog } from "./dialogs/article-dialog";
 
 interface ProvidersProps {
   children: React.ReactNode;

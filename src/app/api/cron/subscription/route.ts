@@ -1,10 +1,10 @@
-import { processSubscriptionSchedules } from "@/services/subscription-service";
+import { caller } from "@/trpc/server";
 import { NextResponse } from "next/server";
 
 // 구독 스케쥴 처리 cron job
 export async function GET() {
   try {
-    await processSubscriptionSchedules();
+    await caller.paymentRouter.processSubscriptionSchedules();
 
     return NextResponse.json(
       {

@@ -1,9 +1,11 @@
-import { Loader2Icon } from "lucide-react";
+import { Logo } from "@/components/common/logo";
+import { LoaderIcon } from "@/components/icons/loader-icon";
 
 const Loading = () => {
   return (
-    <div className="w-full h-[100dvh] flex items-center justify-center">
-      <Loader2Icon className="size-6 animate-spin" />
+    <div className="w-full h-[100dvh] flex flex-col items-center justify-center gap-6">
+      <Logo disabled />
+      <LoaderIcon />
     </div>
   );
 };

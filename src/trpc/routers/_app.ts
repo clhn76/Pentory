@@ -1,14 +1,12 @@
+import { paymentRouter } from "@/modules/payment/trpc";
 import { createTRPCRouter } from "../init";
-import { spaceRouter } from "./space-router";
-import { spaceSourceRouter } from "./space-source-router";
-import { subscriptionRouter } from "./subscription-router";
-import { userRouter } from "./user-router";
+import { spaceRouter } from "@/modules/space/trpc";
+import { userRouter } from "@/modules/user/trpc";
 
 export const appRouter = createTRPCRouter({
-  subscriptionRouter: subscriptionRouter,
+  paymentRouter: paymentRouter,
   userRouter: userRouter,
   spaceRouter: spaceRouter,
-  spaceSourceRouter: spaceSourceRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

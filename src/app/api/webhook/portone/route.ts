@@ -1,4 +1,4 @@
-import { processWebhookVerification } from "@/services/subscription-service";
+import { caller } from "@/trpc/server";
 import * as PortOne from "@portone/server-sdk";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,7 +15,9 @@ export const POST = async (request: NextRequest) => {
 
     // 결제 검증 처리
     if ("data" in webhook && "paymentId" in webhook.data) {
-      await processWebhookVerification(webhook.data.paymentId);
+      await caller.paymentRouter.processWebhookVerification({
+        paymentId: webhook.data.paymentId,
+      });
     }
 
     return NextResponse.json({

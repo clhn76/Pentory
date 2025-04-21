@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { createTRPCClient, httpLink } from "@trpc/client";
 import {
   createTRPCOptionsProxy,
   TRPCQueryOptions,
@@ -9,7 +10,6 @@ import "server-only"; // <-- ensure this file cannot be imported from the client
 import { createTRPCContext } from "./init";
 import { makeQueryClient } from "./query-client";
 import { appRouter } from "./routers/_app";
-import { createTRPCClient, httpLink } from "@trpc/client";
 // IMPORTANT: Create a stable getter for the query client that
 //            will return the same client during the same request.
 export const getQueryClient = cache(makeQueryClient);
@@ -48,3 +48,19 @@ export function prefetch<T extends ReturnType<TRPCQueryOptions<any>>>(
 
 // caller는 서버 컴포넌트에서 직접 데이터를 가져올 때 사용
 export const caller = appRouter.createCaller(createTRPCContext);
+
+export const onError = ({
+  error,
+  type,
+  path,
+}: {
+  error: Error;
+  type: "query" | "mutation" | "subscription" | "unknown";
+  path: string | undefined;
+  input: unknown;
+  ctx: unknown;
+  req: Request;
+}) => {
+  console.error(`❌ [TRPC ERROR] ${path} ${type}: ${error.message}`);
+  throw error;
+};
