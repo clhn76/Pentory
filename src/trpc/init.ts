@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/modules/auth";
 import { db } from "@/db";
 import { userTable } from "@/db/schema";
 import { initTRPC, TRPCError } from "@trpc/server";
