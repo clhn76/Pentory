@@ -103,11 +103,11 @@ export const ArticleDialog = () => {
   } else {
     return (
       <Dialog open={isOpen} onOpenChange={closeDialog}>
-        <DialogContent className="w-full sm:max-w-[860px] max-h-screen overflow-y-auto p-10">
+        <DialogContent className="w-full sm:max-w-[860px] max-h-screen overflow-y-auto p-10 flex flex-col">
           <DialogHeader className="sr-only">
             <DialogTitle>Article</DialogTitle>
           </DialogHeader>
-          {renderContent()}
+          <div>{renderContent()}</div>
         </DialogContent>
       </Dialog>
     );
