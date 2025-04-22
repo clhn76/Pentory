@@ -1,47 +1,13 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { Hero } from "../components/hero";
 
 export const HomePage = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div>
       {/* 히어로 섹션 */}
-      <section className="py-20 px-4">
-        <div className="max-w-screen-xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary">
-                콘텐츠 홍수 속에서, <br />
-                <span className="text-primary">핵심만 파악하세요</span>
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-md">
-                유튜브 채널과 블로그 RSS를 등록하면 인공지능이 자동으로 핵심
-                내용을 요약해드립니다. 수많은 콘텐츠를 빠르게 이해하세요.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link href="/dashboard">
-                  <Button size="lg" className="rounded-full">
-                    무료로 시작하기
-                  </Button>
-                </Link>
-                <Link href="/pricing">
-                  <Button size="lg" variant="outline" className="rounded-full">
-                    요금제 보기
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            <div className="relative h-80 md:h-[500px] rounded-lg overflow-hidden shadow-xl">
-              <Image
-                src="/placeholder.jpg"
-                alt="Pentory Dashboard"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       {/* 동작 방식 섹션 */}
       <section className="py-20 px-4 bg-muted/50">
@@ -166,40 +132,6 @@ export const HomePage = () => {
           </Link>
         </div>
       </section>
-
-      {/* 푸터 */}
-      <footer className="py-10 px-4 border-t">
-        <div className="max-w-screen-xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold">Pentory</span>
-              <span className="text-muted-foreground text-sm">
-                © {new Date().getFullYear()}
-              </span>
-            </div>
-            <div className="flex gap-6">
-              <Link
-                href="/privacy"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                개인정보 처리방침
-              </Link>
-              <Link
-                href="/terms"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                이용약관
-              </Link>
-              <Link
-                href="/contact"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                문의하기
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

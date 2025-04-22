@@ -78,7 +78,7 @@ export const SubscriptionInfo = () => {
               플랜 변경 취소
             </Button>
           )}
-          <Link href="/dashboard/settings/plans">
+          <Link href="/dashboard/plans">
             <Button
               variant="outline"
               disabled={cancelChangeSubscriptionMutation.isPending}
