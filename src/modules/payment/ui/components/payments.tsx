@@ -18,22 +18,32 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { parseAsInteger, useQueryState } from "nuqs";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export const Payments = () => {
   const trpc = useTRPC();
 
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const {
-    data: { payments, pagination },
-  } = useSuspenseQuery(
+  const { data: userPayments, isLoading } = useQuery(
     trpc.paymentRouter.getUserPayments.queryOptions({
       page,
     })
   );
+
+  if (isLoading) {
+    return <PaymentsSkeleton />;
+  }
 
   return (
     <Card>
@@ -51,7 +61,7 @@ export const Payments = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {payments.map((payment) => (
+            {userPayments?.payments.map((payment) => (
               <TableRow key={payment.id}>
                 <TableCell className="font-medium">
                   {format(payment.createdAt, "yyyy-MM-dd")}
@@ -74,8 +84,8 @@ export const Payments = () => {
 
       <CardFooter>
         <CommonPagination
-          totalPages={pagination.totalPages}
-          currentPage={pagination.page}
+          totalPages={userPayments?.pagination.totalPages ?? 0}
+          currentPage={userPayments?.pagination.page ?? 0}
           onPageChange={(page) => setPage(page)}
         />
       </CardFooter>
@@ -84,5 +94,72 @@ export const Payments = () => {
 };
 
 export const PaymentsSkeleton = () => {
-  return <Skeleton className="h-[150px] rounded-xl" />;
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <Skeleton className="h-6 w-24" />
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
+                <Skeleton className="h-4 w-10" />
+              </TableHead>
+              <TableHead>
+                <Skeleton className="h-4 w-12" />
+              </TableHead>
+              <TableHead className="text-right">
+                <Skeleton className="h-4 w-14 ml-auto" />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton className="h-4 w-24" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-20" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="h-4 w-16 ml-auto" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+
+      <CardFooter className="flex justify-center">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious className="opacity-50">
+                <Skeleton className="h-4 w-4 mr-2" />
+              </PaginationPrevious>
+            </PaginationItem>
+
+            {Array.from({ length: 5 }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink className={index === 1 ? "bg-muted" : ""}>
+                  <Skeleton className="h-4 w-4" />
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext className="opacity-50">
+                <Skeleton className="h-4 w-4 ml-2" />
+              </PaginationNext>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </CardFooter>
+    </Card>
+  );
 };

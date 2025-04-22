@@ -1,27 +1,10 @@
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { SubscriptionInfo } from "../components/subscription-info";
-import { PaymentMethod } from "../components/payment-method";
-import { Payments, PaymentsSkeleton } from "../components/payments";
-import { Suspense } from "react";
+import { HydrateClient } from "@/trpc/server";
 import { CancelSubscription } from "../components/cancel-subscription";
+import { PaymentMethod } from "../components/payment-method";
+import { Payments } from "../components/payments";
+import { SubscriptionInfo } from "../components/subscription-info";
 
-export const dynamic = "force-dynamic";
-
-interface BillingPageProps {
-  searchParams: Promise<{
-    page: string;
-  }>;
-}
-
-export const BillingPage = async ({ searchParams }: BillingPageProps) => {
-  const { page } = await searchParams;
-
-  prefetch(
-    trpc.paymentRouter.getUserPayments.queryOptions({
-      page: page ? parseInt(page) : 1,
-    })
-  );
-
+export const BillingPage = async () => {
   return (
     <HydrateClient>
       <div className="space-y-5">
@@ -34,9 +17,7 @@ export const BillingPage = async ({ searchParams }: BillingPageProps) => {
         <PaymentMethod />
 
         {/* 결제 내역 */}
-        <Suspense fallback={<PaymentsSkeleton />}>
-          <Payments />
-        </Suspense>
+        <Payments />
 
         {/* 구독 취소 */}
         <CancelSubscription />
