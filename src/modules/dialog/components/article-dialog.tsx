@@ -44,7 +44,7 @@ export const ArticleDialog = () => {
 
   const renderContent = useCallback(
     () => (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 w-full">
         <div className="w-full relative aspect-video overflow-hidden rounded-lg">
           <Image
             unoptimized

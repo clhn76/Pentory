@@ -20,6 +20,8 @@ export const Markdown = ({ children }: MarkdownProps) => {
     let processed = text.replace(/\*\*(['"])/g, "**");
     // '** 또는 "** 패턴에서 따옴표 제거
     processed = processed.replace(/(['"])\*\*/g, "**");
+    // 텍스트 시작 부분에 있는 ```markdown 제거
+    processed = processed.replace(/^```markdown/g, "");
     return processed;
   };
 
@@ -27,7 +29,7 @@ export const Markdown = ({ children }: MarkdownProps) => {
 
   return (
     <div
-      className="prose dark:prose-invert max-w-none"
+      className="prose dark:prose-invert w-full max-w-none"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
