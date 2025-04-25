@@ -67,7 +67,10 @@ export const SpacesPage = () => {
             onSortChange={setSortBy}
             spacesCount={spaces?.length || 0}
           />
-          <SpacesGrid spaces={sortedSpaces || []} />
+          <SpacesGrid
+            spaces={sortedSpaces || []}
+            hrefPrefix="/dashboard/spaces"
+          />
         </div>
       )}
     </div>

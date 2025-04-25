@@ -4,20 +4,29 @@ import { Logo } from "@/components/common/logo";
 import {
   Sidebar,
   SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { DASHBOARD_MENU_ITEMS } from "@/modules/dashboard/config";
+import { DASHBOARD_GROUPS } from "@/modules/dashboard/config";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Suspense } from "react";
-import { SidebarMySpaces, SidebarMySpacesSkeleton } from "./sidebar-my-spaces";
 import { UserPlanInfo } from "./user-plan-info";
 
 export const DashboardSidebar = () => {
   const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return pathname === href;
+    } else {
+      return pathname.startsWith(href);
+    }
+  };
 
   return (
     <div className="**:transition-none!">
@@ -29,32 +38,32 @@ export const DashboardSidebar = () => {
           {/* 유저 사용량 정보 */}
           <UserPlanInfo />
 
-          {/* 데시보드 메뉴 */}
-          <SidebarMenu className="mt-3">
-            {DASHBOARD_MENU_ITEMS.map((item) => {
-              const isActive =
-                item.href === "/dashboard"
-                  ? pathname === "/dashboard"
-                  : pathname === item.href ||
-                    pathname.startsWith(`${item.href}/`);
-
-              return (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={isActive}>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              );
-            })}
-          </SidebarMenu>
+          {DASHBOARD_GROUPS.map((group) => (
+            <SidebarGroup key={group.groupLabel}>
+              {group.groupLabel && (
+                <SidebarGroupLabel>{group.groupLabel}</SidebarGroupLabel>
+              )}
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {group.items.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton asChild isActive={isActive(item.href)}>
+                        <Link href={item.href}>
+                          <item.icon />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
 
           {/* 내 스페이스 목록 */}
-          <Suspense fallback={<SidebarMySpacesSkeleton />}>
+          {/* <Suspense fallback={<SidebarMySpacesSkeleton />}>
             <SidebarMySpaces />
-          </Suspense>
+          </Suspense> */}
         </SidebarContent>
       </Sidebar>
     </div>

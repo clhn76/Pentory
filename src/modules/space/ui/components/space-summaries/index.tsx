@@ -7,12 +7,17 @@ import { useTRPC } from "@/trpc/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { SummaryItem } from "./summary-item";
+import { SpaceInfo } from "./space-info";
 
 interface SpaceSummariesProps {
   spaceId: string;
+  isPersonal?: boolean;
 }
 
-export const SpaceSummaries = ({ spaceId }: SpaceSummariesProps) => {
+export const SpaceSummaries = ({
+  spaceId,
+  isPersonal = false,
+}: SpaceSummariesProps) => {
   const trpc = useTRPC();
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -67,12 +72,15 @@ export const SpaceSummaries = ({ spaceId }: SpaceSummariesProps) => {
 
   return (
     <div className="mt-4">
-      <div className="space-y-1 px-2">
-        <h1 className="text-2xl font-bold truncate">{spaceInfo?.name}</h1>
-        <p className="text-sm text-muted-foreground">
-          {spaceInfo?.description}
-        </p>
-      </div>
+      <SpaceInfo
+        name={spaceInfo?.name || ""}
+        description={spaceInfo?.description}
+        isPublic={spaceInfo?.isPublic || false}
+        summaryCount={spaceInfo?.summaryCount || 0}
+        sourceCount={spaceInfo?.sourceCount || 0}
+        user={!isPersonal ? spaceInfo?.user : undefined}
+        isPersonal={isPersonal}
+      />
 
       {allSummaries.length === 0 ? (
         <div className="mt-8 flex flex-col items-center justify-center gap-1">

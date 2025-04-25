@@ -5,9 +5,10 @@ import { Space } from "@/modules/space/types";
 
 interface SpacesGridProps {
   spaces: Space[];
+  hrefPrefix: string;
 }
 
-export const SpacesGrid = ({ spaces }: SpacesGridProps) => {
+export const SpacesGrid = ({ spaces, hrefPrefix }: SpacesGridProps) => {
   if (!spaces || spaces.length === 0) {
     return (
       <div className="text-center text-muted-foreground border border-dashed rounded-lg py-20">
@@ -28,7 +29,10 @@ export const SpacesGrid = ({ spaces }: SpacesGridProps) => {
             createdAt: space.createdAt,
             sourceCount: space.sourceCount,
             summaryCount: space.summaryCount,
+            isPublic: space.isPublic,
+            user: space.user,
           }}
+          hrefPrefix={hrefPrefix}
         />
       ))}
     </div>

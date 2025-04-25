@@ -242,6 +242,7 @@ export const spaceTable = pgTable("space", {
     .$type<SpaceSummaryStyle>()
     .default("DEFAULT"),
   customPrompt: text("custom_prompt"),
+  isPublic: boolean("is_public").notNull().default(true),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true,
@@ -306,6 +307,22 @@ export const spaceSummaryTable = pgTable("space_summary", {
   isFailed: boolean("is_failed").notNull().default(false),
 });
 
+export const spaceSubscriptionTable = pgTable("space_subscription", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+  spaceId: uuid("space_id")
+    .notNull()
+    .references(() => spaceTable.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 // ************************ Relation ************************
 
 // User Relations
@@ -327,6 +344,7 @@ export const userRelations = relations(userTable, ({ many, one }) => ({
   }),
   payments: many(paymentTable),
   spaces: many(spaceTable),
+  spaceSubscriptions: many(spaceSubscriptionTable),
 }));
 
 // Account Relations
@@ -430,6 +448,7 @@ export const spaceRelations = relations(spaceTable, ({ one, many }) => ({
   }),
   sources: many(spaceSourceTable),
   summaries: many(spaceSummaryTable),
+  subscriptions: many(spaceSubscriptionTable),
 }));
 
 // Space Source Relations
@@ -455,6 +474,21 @@ export const spaceSummaryRelations = relations(
     spaceSource: one(spaceSourceTable, {
       fields: [spaceSummaryTable.spaceSourceId],
       references: [spaceSourceTable.id],
+    }),
+  })
+);
+
+// Space Subscription Relations
+export const spaceSubscriptionRelations = relations(
+  spaceSubscriptionTable,
+  ({ one }) => ({
+    user: one(userTable, {
+      fields: [spaceSubscriptionTable.userId],
+      references: [userTable.id],
+    }),
+    space: one(spaceTable, {
+      fields: [spaceSubscriptionTable.spaceId],
+      references: [spaceTable.id],
     }),
   })
 );

@@ -12,6 +12,7 @@ export const getSpaces = protectedProcedure.query(async ({ ctx }) => {
       id: spaceTable.id,
       name: spaceTable.name,
       description: spaceTable.description,
+      isPublic: spaceTable.isPublic,
       createdAt: spaceTable.createdAt,
     })
     .from(spaceTable)

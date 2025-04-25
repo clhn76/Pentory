@@ -28,12 +28,20 @@ export const updateSpace = protectedProcedure
           channelId: z.string().optional().nullable(),
         })
       ),
+      isPublic: z.boolean(),
     })
   )
   .mutation(async ({ ctx, input }) => {
     const { user } = ctx;
-    const { spaceId, name, description, summaryStyle, customPrompt, sources } =
-      input;
+    const {
+      spaceId,
+      name,
+      description,
+      summaryStyle,
+      customPrompt,
+      sources,
+      isPublic,
+    } = input;
 
     //  사용자 플랜 정보 조회
     const planResult = await db
@@ -68,6 +76,7 @@ export const updateSpace = protectedProcedure
           description,
           summaryStyle,
           customPrompt,
+          isPublic,
         })
         .where(and(eq(spaceTable.id, spaceId), eq(spaceTable.userId, user.id)));
 
@@ -119,7 +128,7 @@ export const updateSpace = protectedProcedure
 
         // 신규 소스가 있는 경우에만 요약 요청
         if (newSources.length > 0) {
-          runLambdaSpaceSummary(spaceId);
+          await runLambdaSpaceSummary(spaceId);
         }
       }
     });
