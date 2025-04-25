@@ -1,6 +1,4 @@
 import { createTRPCRouter } from "@/trpc/init";
-import { getSpaceById } from "./get-space-by-id";
-// import { getSpaces } from "./get-spaces";
 import { createSpace } from "./create-space";
 import { getDailySummaryCounts } from "./get-daily-summary-counts";
 import { getRecentUpdatedSpaces } from "./get-recent-updated-spaces";
@@ -9,10 +7,15 @@ import { getSpaces } from "./get-spaces";
 import { updateSpace } from "./update-space";
 import { getSummariesBySpaceId } from "./get-summaries-by-space-id";
 import { validateSourceUrl } from "./validate-source-url";
+import { getPublicSpaces } from "./get-public-spaces";
+import { isSubscribed } from "./is-subscribed";
+import { subscribe } from "./subscribe";
+import { unsubscribe } from "./unsubscribe";
+import { getSpaceSources } from "./get-space-sources";
+import { getSubscribedSpaces } from "./get-subscribed-spaces";
 
 export const spaceRouter = createTRPCRouter({
   getSpaces: getSpaces,
-  getSpaceById: getSpaceById,
   getSpaceSettingsById: getSpaceSettingsById,
   createSpace: createSpace,
   updateSpace: updateSpace,
@@ -20,4 +23,10 @@ export const spaceRouter = createTRPCRouter({
   getRecentUpdatedSpaces: getRecentUpdatedSpaces,
   getSummariesBySpaceId: getSummariesBySpaceId,
   validateSourceUrl: validateSourceUrl,
+  getPublicSpaces: getPublicSpaces,
+  isSubscribed: isSubscribed,
+  subscribe: subscribe,
+  unsubscribe: unsubscribe,
+  getSpaceSources: getSpaceSources,
+  getSubscribedSpaces: getSubscribedSpaces,
 });

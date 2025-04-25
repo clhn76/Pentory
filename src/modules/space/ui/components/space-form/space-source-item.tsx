@@ -9,8 +9,8 @@ interface SpaceSourceItemProps {
   type: SpaceSourceType;
   name: string;
   url: string;
-  onRemove: () => void;
-  onNameChange: (newName: string) => void;
+  onRemove?: () => void;
+  onNameChange?: (newName: string) => void;
 }
 
 export const SpaceSourceItem = ({
@@ -24,7 +24,7 @@ export const SpaceSourceItem = ({
   const [editedName, setEditedName] = useState(name);
 
   const handleSave = () => {
-    if (editedName.trim() !== "") {
+    if (editedName.trim() !== "" && onNameChange) {
       onNameChange(editedName);
     }
     setIsEditing(false);
@@ -37,15 +37,17 @@ export const SpaceSourceItem = ({
 
   return (
     <div className="relative space-y-1 bg-muted/50 rounded-lg px-4 py-3">
-      <Button
-        onClick={onRemove}
-        type="button"
-        variant="outline"
-        size="icon"
-        className="absolute rounded-full top-0 right-0 -translate-y-1/2 translate-x-1/2 size-7 dark:bg-muted"
-      >
-        <XIcon />
-      </Button>
+      {onRemove && (
+        <Button
+          onClick={onRemove}
+          type="button"
+          variant="outline"
+          size="icon"
+          className="absolute rounded-full top-0 right-0 -translate-y-1/2 translate-x-1/2 size-7 dark:bg-muted"
+        >
+          <XIcon />
+        </Button>
+      )}
 
       <div className="flex items-center gap-2 justify-between">
         {isEditing ? (
@@ -81,15 +83,17 @@ export const SpaceSourceItem = ({
         ) : (
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium">{name}</p>
-            <Button
-              onClick={() => setIsEditing(true)}
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-            >
-              <EditIcon className="h-3.5 w-3.5" />
-            </Button>
+            {onNameChange && (
+              <Button
+                onClick={() => setIsEditing(true)}
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+              >
+                <EditIcon className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         )}
 

@@ -34,7 +34,7 @@ export const RecentUpdatedSpaces = () => {
           최근 요약된 스페이스가 없습니다.
         </div>
       ) : (
-        <SpacesGrid spaces={spaces} />
+        <SpacesGrid spaces={spaces} hrefPrefix="/dashboard/spaces" />
       )}
     </div>
   );

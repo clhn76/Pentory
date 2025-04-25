@@ -10,9 +10,9 @@ export const DashboardLayout = async ({
   return (
     <SidebarProvider className="flex">
       <DashboardSidebar />
-      <main className="w-full">
+      <main className="w-full flex flex-col">
         <DashboardHeader />
-        {children}
+        <main className="flex-1">{children}</main>
       </main>
     </SidebarProvider>
   );

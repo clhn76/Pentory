@@ -27,11 +27,13 @@ export const createSpace = protectedProcedure
           channelId: z.string().optional().nullable(),
         })
       ),
+      isPublic: z.boolean(),
     })
   )
   .mutation(async ({ ctx, input }) => {
     const { user } = ctx;
-    const { name, description, summaryStyle, customPrompt, sources } = input;
+    const { name, description, summaryStyle, customPrompt, sources, isPublic } =
+      input;
 
     //  사용자 플랜 정보 조회
     const planResult = await db
@@ -67,6 +69,7 @@ export const createSpace = protectedProcedure
           description,
           summaryStyle,
           customPrompt,
+          isPublic,
         })
         .returning({
           id: spaceTable.id,
@@ -87,7 +90,7 @@ export const createSpace = protectedProcedure
         );
 
         // 신규 스페이스에 소스가 있으면 요약 요청
-        runLambdaSpaceSummary(newSpace.id);
+        await runLambdaSpaceSummary(newSpace.id);
       }
 
       return newSpace;

@@ -1,8 +1,8 @@
 import { db } from "@/db";
-import { spaceSummaryTable, spaceTable } from "@/db/schema";
+import { spaceSummaryTable, spaceTable, spaceSourceTable } from "@/db/schema";
 import { protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql, desc } from "drizzle-orm";
+import { and, eq, sql, desc, count } from "drizzle-orm";
 import { z } from "zod";
 
 export const getSummariesBySpaceId = protectedProcedure
@@ -23,8 +23,20 @@ export const getSummariesBySpaceId = protectedProcedure
         id: true,
         name: true,
         description: true,
+        isPublic: true,
       },
-      where: and(eq(spaceTable.id, spaceId), eq(spaceTable.userId, user.id)),
+      with: {
+        user: {
+          columns: {
+            name: true,
+            image: true,
+          },
+        },
+      },
+      where: and(
+        eq(spaceTable.id, spaceId),
+        sql`(${spaceTable.isPublic} = true OR ${spaceTable.userId} = ${user.id})`
+      ),
     });
 
     if (!space) {
@@ -33,6 +45,32 @@ export const getSummariesBySpaceId = protectedProcedure
         message: "Space not found",
       });
     }
+
+    // 소스 카운트 조회
+    const sourceCount = await db
+      .select({
+        count: count(),
+      })
+      .from(spaceSourceTable)
+      .where(
+        and(
+          eq(spaceSourceTable.spaceId, spaceId),
+          eq(spaceSourceTable.isActive, true)
+        )
+      );
+
+    // 전체 요약 개수 조회
+    const summaryCount = await db
+      .select({
+        count: count(),
+      })
+      .from(spaceSummaryTable)
+      .where(
+        and(
+          eq(spaceSummaryTable.spaceId, spaceId),
+          eq(spaceSummaryTable.isFailed, false)
+        )
+      );
 
     // 커서 기반 페이지네이션으로 요약 불러오기
     const summaries = await db.query.spaceSummaryTable.findMany({
@@ -64,6 +102,10 @@ export const getSummariesBySpaceId = protectedProcedure
     return {
       items: summaries,
       nextCursor,
-      space,
+      space: {
+        ...space,
+        sourceCount: sourceCount[0].count,
+        summaryCount: summaryCount[0].count,
+      },
     };
   });

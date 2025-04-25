@@ -39,6 +39,7 @@ export const getRecentUpdatedSpaces = protectedProcedure.query(
       .select({
         id: spaceTable.id,
         name: spaceTable.name,
+        isPublic: spaceTable.isPublic,
         description: spaceTable.description,
         createdAt: spaceTable.createdAt,
       })
@@ -108,22 +109,12 @@ export const getRecentUpdatedSpaces = protectedProcedure.query(
       summaryCounts.map((item) => [item.spaceId, item.count])
     );
 
-    // 정렬 순서를 유지하기 위한 Map
-    const spaceMap = new Map(spaces.map((space) => [space.id, space]));
-
-    // 최신 요약 순서대로 스페이스 정보를 반환하되 getSpaces와 동일한 형식으로 변환
-    const spacesWithCounts = orderedValidSpaceIds.map((id) => {
-      const space = spaceMap.get(id);
-      // 이 시점에서 space는 항상 존재해야 함
-      return {
-        id: space!.id,
-        name: space!.name,
-        description: space!.description,
-        createdAt: space!.createdAt,
-        sourceCount: sourceCountMap.get(id) || 0,
-        summaryCount: summaryCountMap.get(id) || 0,
-      };
-    });
+    // 최종 스페이스 데이터에 카운트 정보 병합
+    const spacesWithCounts = spaces.map((space) => ({
+      ...space,
+      sourceCount: sourceCountMap.get(space.id) || 0,
+      summaryCount: summaryCountMap.get(space.id) || 0,
+    }));
 
     return spacesWithCounts;
   }

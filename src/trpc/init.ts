@@ -4,17 +4,16 @@ import { userTable } from "@/db/schema";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { cache } from "react";
+
 export const createTRPCContext = cache(async () => {
   const session = await auth();
   return { session };
 });
+
 type Context = Awaited<ReturnType<typeof createTRPCContext>>;
-// Avoid exporting the entire t-object
-// since it's not very descriptive.
-// For instance, the use of a t variable
-// is common in i18n libraries.
+
 const t = initTRPC.context<Context>().create();
-// Base router and procedure helpers
+
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 

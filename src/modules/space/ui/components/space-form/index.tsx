@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, Globe, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -31,6 +31,7 @@ import { AppRouter } from "@/trpc/routers/_app";
 import { AddSpaceSource } from "./add-space-source";
 import { SpaceSourceItem } from "./space-source-item";
 import { FREE_PLAN } from "@/modules/payment/config";
+import { Switch } from "@/components/ui/switch";
 
 const spaceFormSchema = z.object({
   name: z
@@ -40,6 +41,7 @@ const spaceFormSchema = z.object({
   description: z.string().max(100, "스페이스 설명은 최대 100자입니다."),
   summaryStyle: z.enum(["DEFAULT", "CUSTOM"]),
   customPrompt: z.string(),
+  isPublic: z.boolean(),
   sources: z.array(
     z.object({
       url: z.string(),
@@ -66,9 +68,7 @@ const summaryStyleOptions = [
 export type SpaceFormValues = z.infer<typeof spaceFormSchema>;
 
 interface SpaceFormProps {
-  space?:
-    | inferRouterOutputs<AppRouter>["spaceRouter"]["getSpaceSettingsById"]
-    | inferRouterOutputs<AppRouter>["spaceRouter"]["getSpaceById"];
+  space?: inferRouterOutputs<AppRouter>["spaceRouter"]["getSpaceSettingsById"];
 }
 
 export const SpaceForm = ({ space }: SpaceFormProps) => {
@@ -83,6 +83,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
       description: space?.description || "",
       summaryStyle: space?.summaryStyle || "DEFAULT",
       customPrompt: space?.customPrompt || "",
+      isPublic: space?.isPublic ?? true,
       sources: space?.sources
         ? space.sources.map((source) => ({
             url: source.url,
@@ -126,7 +127,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
           queryKey: trpc.spaceRouter.getSpaces.queryKey(),
         });
         queryClient.invalidateQueries({
-          queryKey: trpc.spaceRouter.getSpaceById.queryKey({
+          queryKey: trpc.spaceRouter.getSpaceSettingsById.queryKey({
             spaceId: space?.id,
           }),
         });
@@ -147,6 +148,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
           description: values.description,
           summaryStyle: values.summaryStyle,
           customPrompt: values.customPrompt,
+          isPublic: values.isPublic,
           sources: values.sources.map((source) => ({
             ...source,
             type: source.type as "YOUTUBE_CHANNEL" | "RSS_FEED",
@@ -164,6 +166,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
         description: values.description,
         summaryStyle: values.summaryStyle,
         customPrompt: values.customPrompt,
+        isPublic: values.isPublic,
         sources: values.sources.map((source) => ({
           ...source,
           type: source.type as "YOUTUBE_CHANNEL" | "RSS_FEED",
@@ -226,6 +229,8 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
     userInfo?.subscription?.plan.features.maxSourceCount ||
     FREE_PLAN.maxSourceCount;
   const planName = userInfo?.subscription?.plan.name || FREE_PLAN.name;
+  const isFreePlan =
+    !userInfo?.subscription || userInfo?.subscription?.status === "CANCELLED";
 
   return (
     <Card>
@@ -333,6 +338,45 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
                 )}
               </div>
             </div>
+
+            <FormField
+              control={form.control}
+              name="isPublic"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <FormLabel className="text-base">공개 설정</FormLabel>
+                      {field.value ? (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Globe className="h-4 w-4" />
+                          <span>공개</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Lock className="h-4 w-4" />
+                          <span>비공개</span>
+                        </div>
+                      )}
+                    </div>
+                    <FormDescription>
+                      {isFreePlan
+                        ? "무료 플랜에서는 공개 스페이스만 생성할 수 있습니다."
+                        : field.value
+                        ? "공개 스페이스는 공개 스페이스 패널을 통해 다른 사람이 구독할 수 있습니다."
+                        : "비공개 스페이스는 개인 스페이스 패널을 통해 개인만 조회 가능합니다."}
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isFreePlan}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
             <Separator />
 
