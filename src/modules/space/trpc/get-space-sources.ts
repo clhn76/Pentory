@@ -18,12 +18,9 @@ export const getSpaceSources = protectedProcedure
       return null;
     }
 
-    // 활성화된 소스 정보 조회
+    // 소스 정보 조회
     const sources = await db.query.spaceSourceTable.findMany({
-      where: and(
-        eq(spaceSourceTable.spaceId, spaceId),
-        eq(spaceSourceTable.isActive, true)
-      ),
+      where: eq(spaceSourceTable.spaceId, spaceId),
       orderBy: (sources) => sources.createdAt,
     });
 

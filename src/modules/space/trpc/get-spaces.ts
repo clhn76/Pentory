@@ -34,13 +34,10 @@ export const getSpaces = protectedProcedure.query(async ({ ctx }) => {
     })
     .from(spaceSourceTable)
     .where(
-      and(
-        eq(spaceSourceTable.isActive, true),
-        sql`${spaceSourceTable.spaceId} IN (${sql.join(
-          spaceIds.map((id) => sql`${id}`),
-          sql`, `
-        )})`
-      )
+      sql`${spaceSourceTable.spaceId} IN (${sql.join(
+        spaceIds.map((id) => sql`${id}`),
+        sql`, `
+      )})`
     )
     .groupBy(spaceSourceTable.spaceId);
 
