@@ -24,12 +24,10 @@ export const SubscribeSpacesPage = () => {
     })
   );
 
-  const totalPages = Math.ceil((spaces?.total || 0) / itemsPerPage);
-
   return (
     <div className="container py-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">구독한 스페이스</h1>
+        <h1 className="text-2xl font-bold">구독 스페이스</h1>
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -55,8 +53,8 @@ export const SubscribeSpacesPage = () => {
           {/* 페이지네이션 컨트롤 */}
           <div className="mt-6">
             <Pagination
-              currentPage={page ?? 1}
-              totalPages={totalPages}
+              currentPage={page}
+              totalPages={spaces?.totalPages}
               onPageChange={setPage}
             />
           </div>

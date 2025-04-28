@@ -1,11 +1,11 @@
-import { db } from "@/db";
-import { spaceTable, spaceSubscriptionTable } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
-import { SpaceSummaries } from "../components/space-summaries";
 import { BackButton } from "@/components/common/back-button";
-import { SubscribeButton } from "../components/subscribe-button";
+import { db } from "@/db";
+import { spaceTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 import { SpaceSourceDialog } from "../components/space-source-dialog";
+import { SpaceSummaries } from "../components/space-summaries";
+import { SubscribeButton } from "../components/subscribe-button";
 
 interface SubscribeSpaceIdPageProps {
   params: Promise<{ spaceId: string }>;
@@ -16,7 +16,7 @@ export const SubscribeSpaceIdPage = async ({
 }: SubscribeSpaceIdPageProps) => {
   const { spaceId } = await params;
 
-  // 스페이스가 존재하는지 확인
+  // 공개 스페이스인지 확인
   const space = await db.query.spaceTable.findFirst({
     where: eq(spaceTable.id, spaceId),
   });
@@ -26,25 +26,18 @@ export const SubscribeSpaceIdPage = async ({
     notFound();
   }
 
-  // 구독 중인 스페이스인지 확인
-  const subscription = await db.query.spaceSubscriptionTable.findFirst({
-    where: and(
-      eq(spaceSubscriptionTable.spaceId, spaceId),
-      eq(spaceSubscriptionTable.userId, space.userId)
-    ),
-  });
-
-  // 구독 중이 아닌 경우 메시지 표시
-  if (!subscription) {
+  // 비공개 스페이스인 경우 메시지 표시
+  if (!space.isPublic) {
     return (
       <div className="container">
         <div className="flex items-center gap-2 justify-between">
-          <BackButton href="/dashboard/subscribe-spaces" />
+          <BackButton href="/dashboard/public-spaces" />
+          <SubscribeButton spaceId={spaceId} spaceUserId={space.userId} />
         </div>
         <div className="mt-24 text-center">
-          <h2 className="text-2xl font-bold mb-4">구독하지 않은 스페이스</h2>
+          <h2 className="text-2xl font-bold mb-4">비공개 스페이스</h2>
           <p className="text-muted-foreground">
-            해당 스페이스는 구독하지 않았습니다.
+            해당 스페이스는 비공개로 설정되어 있어 접근할 수 없습니다.
           </p>
         </div>
       </div>

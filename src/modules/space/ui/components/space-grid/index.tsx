@@ -12,7 +12,7 @@ export const SpacesGrid = ({ spaces, hrefPrefix }: SpacesGridProps) => {
   if (!spaces || spaces.length === 0) {
     return (
       <div className="text-center text-muted-foreground border border-dashed rounded-lg py-20">
-        스페이스가 없습니다. 새 스페이스를 만들어보세요.
+        스페이스가 없습니다
       </div>
     );
   }

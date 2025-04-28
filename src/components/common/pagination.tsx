@@ -7,15 +7,15 @@ import {
 } from "lucide-react";
 
 interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
+  currentPage?: number;
+  totalPages?: number;
   onPageChange: (page: number) => void;
   maxVisiblePages?: number;
 }
 
 export const Pagination = ({
-  currentPage,
-  totalPages,
+  currentPage = 1,
+  totalPages = 0,
   onPageChange,
   maxVisiblePages = 5,
 }: PaginationProps) => {
@@ -71,7 +71,7 @@ export const Pagination = ({
         variant="outline"
         size="icon"
         onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || totalPages === 0}
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -79,7 +79,7 @@ export const Pagination = ({
         variant="outline"
         size="icon"
         onClick={() => onPageChange(totalPages)}
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || totalPages === 0}
       >
         <ChevronsRight className="h-4 w-4" />
       </Button>
