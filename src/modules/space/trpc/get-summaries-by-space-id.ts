@@ -52,12 +52,7 @@ export const getSummariesBySpaceId = protectedProcedure
         count: count(),
       })
       .from(spaceSourceTable)
-      .where(
-        and(
-          eq(spaceSourceTable.spaceId, spaceId),
-          eq(spaceSourceTable.isActive, true)
-        )
-      );
+      .where(eq(spaceSourceTable.spaceId, spaceId));
 
     // 전체 요약 개수 조회
     const summaryCount = await db

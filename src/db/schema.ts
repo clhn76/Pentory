@@ -275,7 +275,6 @@ export const spaceSourceTable = pgTable(
     })
       .notNull()
       .defaultNow(),
-    isActive: boolean("is_active").notNull().default(true),
   },
   (table) => {
     return {

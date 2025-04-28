@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { SpaceForm } from "./space-form";
+import { DeleteSpaceCard } from "./delete-space-card";
 
 interface SpaceSettingsProps {
   spaceId: string;
@@ -30,6 +31,7 @@ export const SpaceSettings = ({ spaceId }: SpaceSettingsProps) => {
     <div className="max-w-screen-md mx-auto mt-4 space-y-6">
       <h1 className="title">스페이스 설정</h1>
       <SpaceForm space={space} />
+      {space && <DeleteSpaceCard spaceId={spaceId} spaceName={space.name} />}
     </div>
   );
 };

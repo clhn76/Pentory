@@ -73,13 +73,10 @@ export const getRecentUpdatedSpaces = protectedProcedure.query(
       })
       .from(spaceSourceTable)
       .where(
-        and(
-          eq(spaceSourceTable.isActive, true),
-          sql`${spaceSourceTable.spaceId} IN (${sql.join(
-            orderedValidSpaceIds.map((id) => sql`${id}`),
-            sql`, `
-          )})`
-        )
+        sql`${spaceSourceTable.spaceId} IN (${sql.join(
+          orderedValidSpaceIds.map((id) => sql`${id}`),
+          sql`, `
+        )})`
       )
       .groupBy(spaceSourceTable.spaceId);
 

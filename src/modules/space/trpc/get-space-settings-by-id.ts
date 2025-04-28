@@ -13,7 +13,6 @@ export const getSpaceSettingsById = protectedProcedure
     const space = await db.query.spaceTable.findFirst({
       with: {
         sources: {
-          where: eq(spaceSourceTable.isActive, true),
           orderBy: desc(spaceSourceTable.createdAt),
         },
       },

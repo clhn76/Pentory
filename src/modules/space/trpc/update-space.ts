@@ -80,56 +80,85 @@ export const updateSpace = protectedProcedure
         })
         .where(and(eq(spaceTable.id, spaceId), eq(spaceTable.userId, user.id)));
 
-      // 기존 소스 비활성 처리
-      await tx
-        .update(spaceSourceTable)
-        .set({
-          isActive: false,
+      // 기존 소스 조회
+      const existingSources = await tx
+        .select({
+          url: spaceSourceTable.url,
         })
+        .from(spaceSourceTable)
         .where(eq(spaceSourceTable.spaceId, spaceId));
 
-      // 새로운 소스 추가
-      if (sources.length > 0) {
-        // 기존 소스 URL 목록 조회
-        const existingSources = await tx
-          .select({ url: spaceSourceTable.url })
-          .from(spaceSourceTable)
-          .where(eq(spaceSourceTable.spaceId, spaceId));
+      // 새로운 소스 URL 맵 생성
+      const newSourceMap = new Map(
+        sources.map((source) => [source.url, source])
+      );
 
-        const existingUrls = new Set(
-          existingSources.map((source) => source.url)
-        );
+      // 삭제할 소스 찾기 (기존에 있지만 새로운 소스에 없는 것)
+      const sourcesToDelete = existingSources.filter(
+        (source) => !newSourceMap.has(source.url)
+      );
 
-        // 신규 소스 확인
-        const newSources = sources.filter(
-          (source) => !existingUrls.has(source.url)
-        );
+      // 추가할 소스 찾기 (새로운 소스에 있지만 기존에 없는 것)
+      const sourcesToAdd = sources.filter(
+        (source) =>
+          !existingSources.some((existing) => existing.url === source.url)
+      );
 
-        // 소스 추가
+      // 업데이트할 소스 찾기 (기존과 새로운 소스 모두에 있는 것)
+      const sourcesToUpdate = sources.filter((source) =>
+        existingSources.some((existing) => existing.url === source.url)
+      );
+
+      // 삭제할 소스 처리
+      if (sourcesToDelete.length > 0) {
         await tx
-          .insert(spaceSourceTable)
-          .values(
-            sources.map((source) => ({
-              spaceId,
-              url: source.url,
+          .delete(spaceSourceTable)
+          .where(
+            and(
+              eq(spaceSourceTable.spaceId, spaceId),
+              sql`${spaceSourceTable.url} IN (${sourcesToDelete
+                .map((s) => s.url)
+                .join(",")})`
+            )
+          );
+      }
+
+      // 새로운 소스 추가
+      if (sourcesToAdd.length > 0) {
+        await tx.insert(spaceSourceTable).values(
+          sourcesToAdd.map((source) => ({
+            spaceId,
+            url: source.url,
+            name: source.name,
+            type: source.type,
+            channelId: source.channelId,
+            isActive: true,
+          }))
+        );
+      }
+
+      // 기존 소스 업데이트
+      if (sourcesToUpdate.length > 0) {
+        for (const source of sourcesToUpdate) {
+          await tx
+            .update(spaceSourceTable)
+            .set({
               name: source.name,
               type: source.type,
               channelId: source.channelId,
-              isActive: true,
-            }))
-          )
-          .onConflictDoUpdate({
-            target: [spaceSourceTable.spaceId, spaceSourceTable.url],
-            set: {
-              isActive: true,
-              name: sql`excluded.name`,
-            },
-          });
-
-        // 신규 소스가 있는 경우에만 요약 요청
-        if (newSources.length > 0) {
-          await runLambdaSpaceSummary(spaceId);
+            })
+            .where(
+              and(
+                eq(spaceSourceTable.spaceId, spaceId),
+                eq(spaceSourceTable.url, source.url)
+              )
+            );
         }
+      }
+
+      // 새로운 소스가 있는 경우에만 요약 요청
+      if (sourcesToAdd.length > 0) {
+        await runLambdaSpaceSummary(spaceId);
       }
     });
   });
