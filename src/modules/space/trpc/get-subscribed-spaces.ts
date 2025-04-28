@@ -64,6 +64,7 @@ export const getSubscribedSpaces = protectedProcedure
       return {
         items: [],
         total: 0,
+        totalPages: 0,
       };
     }
 
@@ -124,5 +125,6 @@ export const getSubscribedSpaces = protectedProcedure
     return {
       items: spacesWithCounts,
       total: totalCount[0].count,
+      totalPages: Math.ceil(totalCount[0].count / limit),
     };
   });
