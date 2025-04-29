@@ -4,7 +4,7 @@ export const LANDING_NAVS: {
   variant: "default" | "ghost";
 }[] = [
   {
-    label: "시작하기",
+    label: "무료로 시작하기",
     href: "/dashboard",
     variant: "default",
   },
