@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const CTASection = () => {
   return (
-    <section className="py-12 sm:py-20 px-4">
+    <section className="pb-12 sm:pb-20 px-4">
       <div className="max-w-screen-lg mx-auto p-6 sm:p-8 md:p-10 rounded-2xl text-center bg-gradient-to-tr from-primary/5 to-primary/25">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
           정보 과부하에서 벗어나세요

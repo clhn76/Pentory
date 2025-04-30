@@ -22,6 +22,7 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect } from "react";
 import { useArticleDialogStore } from "../stores/use-article-dialog-store";
+import DisplayAd from "@/modules/ads/components/display-ad";
 
 export const ArticleDialog = () => {
   const isMobile = useIsMobile();
@@ -57,7 +58,6 @@ export const ArticleDialog = () => {
             className="object-cover"
           />
         </div>
-
         <div className="flex flex-wrap items-center gap-3">
           {articleData?.source && (
             <Badge variant="secondary">{articleData.source.name}</Badge>
@@ -79,8 +79,11 @@ export const ArticleDialog = () => {
             </a>
           )}
         </div>
+        <DisplayAd className="h-[90px]" />
 
         <Markdown>{articleData?.content}</Markdown>
+
+        <DisplayAd className="h-[90px]" />
       </div>
     ),
     [articleData]

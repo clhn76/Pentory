@@ -1,3 +1,3 @@
-import { HomePage } from "@/modules/landing/ui/pages/home-page";
+import { HomePage } from "@/modules/landing/pages/home-page";
 
 export default HomePage;

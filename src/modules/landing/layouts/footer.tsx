@@ -9,7 +9,7 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <Logo />
 
-          <div className="flex flex-wrap gap-4 items-center justify-center">
+          <div className="flex flex-wrap gap-6 items-center justify-center">
             <Link
               href="/privacy-policy"
               className="text-muted-foreground hover:text-primary"
@@ -21,12 +21,6 @@ export const Footer = () => {
               className="text-muted-foreground hover:text-primary"
             >
               이용약관
-            </Link>
-            <Link
-              href="/refund-policy"
-              className="text-muted-foreground hover:text-primary"
-            >
-              환불 정책
             </Link>
           </div>
         </div>

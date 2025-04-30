@@ -42,6 +42,11 @@ export const revokePaymentSchedulesOrThrow = async (billingKey: string) => {
     if (err.data.type === "BILLING_KEY_ALREADY_DELETED") {
       console.log(`⚠️ 이미 처리된 결제 예약 취소 요청을 건너 뜁니다.`);
       return;
+    } else if (err.data.type === "BILLING_KEY_NOT_FOUND") {
+      console.log(
+        `⚠️ 존재하지 않는 빌링키의 결제 예약 취소 요청을 건너 뜁니다.`
+      );
+      return;
     }
     console.error(`❌ 결제 예약 취소 실패: `, err.data);
     throw error;
@@ -61,6 +66,9 @@ export const deleteBillingKeyOrThrow = async (billingKey: string) => {
     const err = error as DeleteBillingKeyError;
     if (err.data.type === "BILLING_KEY_ALREADY_DELETED") {
       console.log(`⚠️ 이미 삭제된 빌링키의 삭제 요청을 건너뜁니다.`);
+      return;
+    } else if (err.data.type === "BILLING_KEY_NOT_FOUND") {
+      console.log(`⚠️ 존재하지 않는 빌링키의 삭제 요청을 건너뜁니다.`);
       return;
     }
     console.error(`❌ 빌링키 삭제 실패: `, err.data);

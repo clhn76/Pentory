@@ -26,7 +26,7 @@ export const FeaturesSection = () => {
     <section className="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-background to-background/80">
       <div className="max-w-screen-xl mx-auto">
         <div className="text-center mb-12 sm:mb-20">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
             주요 기능
           </h2>
           <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">

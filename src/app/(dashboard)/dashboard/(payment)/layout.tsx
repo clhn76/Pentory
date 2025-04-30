@@ -1,3 +1,3 @@
-import { PaymentLayout } from "@/modules/payment/ui/layouts/payment-layout";
+import { PaymentLayout } from "@/modules/payment/layouts/payment-layout";
 
 export default PaymentLayout;

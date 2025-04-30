@@ -1,3 +1,3 @@
-import { LandingLayout } from "@/modules/landing/ui/layouts/landing-layout";
+import { LandingLayout } from "@/modules/landing/layouts/landing-layout";
 
 export default LandingLayout;
