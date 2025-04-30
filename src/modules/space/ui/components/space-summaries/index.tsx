@@ -8,6 +8,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { SummaryItem } from "./summary-item";
 import { SpaceInfo } from "./space-info";
+import DisplayAd from "@/modules/ads/components/display-ad";
 
 interface SpaceSummariesProps {
   spaceId: string;
@@ -81,6 +82,8 @@ export const SpaceSummaries = ({
         user={!isPersonal ? spaceInfo?.user : undefined}
         isPersonal={isPersonal}
       />
+
+      <DisplayAd className="mt-6 h-[90px]" />
 
       {allSummaries.length === 0 ? (
         <div className="mt-8 flex flex-col items-center justify-center gap-1">

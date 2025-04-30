@@ -23,13 +23,14 @@ async function main() {
     // Pro 플랜 (연간)
     {
       name: "Pro",
-      price: 99000,
+      price: 89100,
       billingCycle: "YEAR",
       features: {
         maxSpaceCount: 10,
         maxSourceCount: 50,
       },
       tier: 1,
+      discount: 25,
     },
     // Premium 플랜 (월간)
     {
@@ -45,13 +46,14 @@ async function main() {
     // Premium 플랜 (연간)
     {
       name: "Premium",
-      price: 199000,
+      price: 179100,
       billingCycle: "YEAR",
       features: {
         maxSpaceCount: 50,
         maxSourceCount: 3000,
       },
       tier: 2,
+      discount: 25,
     },
   ];
 

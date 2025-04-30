@@ -1,3 +1,3 @@
-import { BillingPage } from "@/modules/payment/ui/pages/billing-page";
+import { BillingPage } from "@/modules/payment/pages/billing-page";
 
 export default BillingPage;

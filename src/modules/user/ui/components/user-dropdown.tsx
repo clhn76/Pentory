@@ -40,11 +40,15 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
+          <div className="flex flex-col space-y-2 p-1">
+            <div className="flex items-center space-x-2">
+              <p className="text-sm font-semibold text-foreground">
+                {user.name}
+              </p>
+            </div>
+            <div className="flex flex-col space-y-1">
+              <p className="text-xs text-muted-foreground">ID: {user.id}</p>
+            </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

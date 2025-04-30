@@ -1,3 +1,3 @@
-import { PlansPage } from "@/modules/payment/ui/pages/plans-page";
+import { PlansPage } from "@/modules/payment/pages/plans-page";
 
 export default PlansPage;

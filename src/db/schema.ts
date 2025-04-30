@@ -137,6 +137,7 @@ export const planTable = pgTable("plan", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   price: integer("price").notNull(),
+  discount: integer("discount"),
   billingCycle: text("billing_cycle").$type<PlanBillingCycle>().notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
@@ -147,6 +148,7 @@ export const planTable = pgTable("plan", {
   features: jsonb("features").$type<PlanFeatures>().notNull(),
   tier: integer("tier").notNull(), // 플랜 변경시 업그레이드, 다운그레이드 결정하는 기준 (높을수록 상위 티어)
   isDisplay: boolean("is_display").notNull().default(true),
+  isPopular: boolean("is_popular").notNull().default(false),
 });
 
 export type SubscriptionStatus =
@@ -322,6 +324,22 @@ export const spaceSubscriptionTable = pgTable("space_subscription", {
     .defaultNow(),
 });
 
+// ************************ Feedback ************************
+
+export const feedbackTable = pgTable("feedback", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
+
 // ************************ Relation ************************
 
 // User Relations
@@ -344,6 +362,7 @@ export const userRelations = relations(userTable, ({ many, one }) => ({
   payments: many(paymentTable),
   spaces: many(spaceTable),
   spaceSubscriptions: many(spaceSubscriptionTable),
+  feedbacks: many(feedbackTable),
 }));
 
 // Account Relations
@@ -491,3 +510,11 @@ export const spaceSubscriptionRelations = relations(
     }),
   })
 );
+
+// Feedback Relations
+export const feedbackRelations = relations(feedbackTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [feedbackTable.userId],
+    references: [userTable.id],
+  }),
+}));

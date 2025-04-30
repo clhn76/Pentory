@@ -1,15 +1,16 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { planTable } from "@/db/schema";
 import { useGlobalAlertDialogStore } from "@/modules/dialog/stores/use-global-alert-dialog-store";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlanBillingCycle, planTable } from "@/db/schema";
+import { calculateUpgradeAmount } from "@/modules/payment/utils";
 import { useTRPC } from "@/trpc/client";
 import PortOne from "@portone/browser-sdk/v2";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { toast } from "sonner";
 import { PlanCard } from "./plan-card";
-import { calculateUpgradeAmount } from "@/modules/payment/utils";
 
 interface PlansProps {
   plans: (typeof planTable.$inferSelect)[];
@@ -22,6 +23,9 @@ export const Plans = ({ plans }: PlansProps) => {
   const { data: userInfo } = useQuery(
     trpc.userRouter.getUserInfo.queryOptions()
   );
+
+  const monthlyPlans = plans.filter((plan) => plan.billingCycle === "MONTH");
+  const yearlyPlans = plans.filter((plan) => plan.billingCycle === "YEAR");
 
   // Stores
   const { openDialog } = useGlobalAlertDialogStore();
@@ -57,13 +61,6 @@ export const Plans = ({ plans }: PlansProps) => {
 
   const registerPaymentMethod = useMutation(
     trpc.paymentRouter.upsertPaymentMethod.mutationOptions()
-  );
-
-  // States
-  const [billingCycle, setBillingCycle] = useState<PlanBillingCycle>("YEAR");
-
-  const filteredPlans = plans.filter(
-    (plan) => plan.billingCycle === billingCycle
   );
 
   const handleSubscribe = async (plan: typeof planTable.$inferSelect) => {
@@ -136,31 +133,81 @@ export const Plans = ({ plans }: PlansProps) => {
   };
 
   return (
-    <section className="space-y- flex flex-col items-center gap-6">
+    <section>
       {/* 결제 주기 탭 */}
-      <Tabs
-        defaultValue={billingCycle}
-        onValueChange={(value) => setBillingCycle(value as PlanBillingCycle)}
-      >
-        <TabsList>
-          <TabsTrigger value="MONTH">월 구독</TabsTrigger>
-          <TabsTrigger value="YEAR">연 구독 (10% 할인)</TabsTrigger>
+      <Tabs defaultValue="YEAR" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto">
+          <TabsTrigger value="MONTH">월간 플랜</TabsTrigger>
+          <TabsTrigger value="YEAR">
+            연간 플랜
+            <Badge className="animate-bounce">15% 할인</Badge>
+          </TabsTrigger>
         </TabsList>
+        <TabsContent value="MONTH">
+          <div className="grid md:grid-cols-2 gap-8 mt-12">
+            {monthlyPlans.map((plan) => (
+              <PlanCard
+                key={plan.id}
+                plan={plan}
+                billingCycle={plan.billingCycle}
+                actionElement={
+                  <>
+                    {userInfo?.subscription?.plan.id !== plan.id ? (
+                      <Button
+                        onClick={() => handleSubscribe(plan)}
+                        isLoading={
+                          createSubscription.isPending ||
+                          changeSubscription.isPending
+                        }
+                        size="lg"
+                        className="w-full"
+                      >
+                        {userInfo?.subscription ? "구독 변경" : "구독 시작"}
+                      </Button>
+                    ) : (
+                      <p className="text-muted-foreground text-center h-10 flex items-center justify-center">
+                        현재 플랜
+                      </p>
+                    )}
+                  </>
+                }
+              />
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="YEAR">
+          <div className="grid md:grid-cols-2 gap-8 mt-12">
+            {yearlyPlans.map((plan) => (
+              <PlanCard
+                key={plan.id}
+                plan={plan}
+                billingCycle={plan.billingCycle}
+                actionElement={
+                  <>
+                    {userInfo?.subscription?.plan.id !== plan.id ? (
+                      <Button
+                        onClick={() => handleSubscribe(plan)}
+                        isLoading={
+                          createSubscription.isPending ||
+                          changeSubscription.isPending
+                        }
+                        size="lg"
+                        className="w-full"
+                      >
+                        {userInfo?.subscription ? "구독 변경" : "구독 시작"}
+                      </Button>
+                    ) : (
+                      <p className="text-muted-foreground text-center h-10 flex items-center justify-center">
+                        현재 플랜
+                      </p>
+                    )}
+                  </>
+                }
+              />
+            ))}
+          </div>
+        </TabsContent>
       </Tabs>
-
-      {/* 플랜 카드 목록 */}
-      <div className="grid grid-cols-1 md:grid-cols-2  gap-5 w-full">
-        {filteredPlans.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            plan={plan}
-            onSubscribe={() => handleSubscribe(plan)}
-            isLoading={
-              createSubscription.isPending || changeSubscription.isPending
-            }
-          />
-        ))}
-      </div>
     </section>
   );
 };

@@ -8,7 +8,11 @@ import {
   revokePaymentSchedulesOrThrow,
 } from "./utils";
 import { db } from "@/db";
-import { planTable, subscriptionScheduleTable } from "@/db/schema";
+import {
+  paymentMethodTable,
+  planTable,
+  subscriptionScheduleTable,
+} from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -76,4 +80,20 @@ export const upsertPaymentMethod = protectedProcedure
         timeToPay: subscription.endAt,
       });
     }
+
+    // 결제 수단 업데이트 또는 생성
+    await db
+      .insert(paymentMethodTable)
+      .values({
+        userId,
+        billingKey: newBillingKey,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: paymentMethodTable.userId,
+        set: {
+          billingKey: newBillingKey,
+          updatedAt: new Date(),
+        },
+      });
   });

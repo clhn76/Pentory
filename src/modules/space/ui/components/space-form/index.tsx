@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { SpaceSourceType } from "@/db/schema";
-import { useGetUserInfo } from "@/hooks/use-get-user-info";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +31,7 @@ import { AddSpaceSource } from "./add-space-source";
 import { SpaceSourceItem } from "./space-source-item";
 import { FREE_PLAN } from "@/modules/payment/config";
 import { Switch } from "@/components/ui/switch";
+import { useGetUserInfo } from "@/modules/user/hooks/use-get-user-info.hook";
 
 const spaceFormSchema = z.object({
   name: z

@@ -7,7 +7,7 @@ import {
 } from "@/modules/space/ui/components/space-grid";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 
 export const RecentUpdatedSpaces = () => {
@@ -32,6 +32,13 @@ export const RecentUpdatedSpaces = () => {
       ) : !spaces || spaces.length === 0 ? (
         <div className="text-center text-muted-foreground border border-dashed rounded-lg py-10">
           최근 요약된 스페이스가 없습니다.
+          <div className="mt-4">
+            <Link href="/dashboard/spaces/new">
+              <Button>
+                <PlusIcon /> 새 스페이스 만들기
+              </Button>
+            </Link>
+          </div>
         </div>
       ) : (
         <SpacesGrid spaces={spaces} hrefPrefix="/dashboard/spaces" />

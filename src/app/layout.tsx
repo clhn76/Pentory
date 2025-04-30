@@ -3,6 +3,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
+import Script from "next/script";
 
 const pretendard = localFont({
   src: [
@@ -46,6 +47,17 @@ export default function RootLayout({
         className={cn(pretendard.className, "antialiased")}
         suppressHydrationWarning
       >
+        {process.env.NODE_ENV !== "development" && (
+          <>
+            {/* Adsense */}
+            <Script
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8222693996695565"
+              crossOrigin="anonymous"
+              strategy="afterInteractive"
+            />
+          </>
+        )}
+
         <Providers>{children}</Providers>
       </body>
     </html>
