@@ -24,6 +24,6 @@ export const submitFeedback = protectedProcedure
       userId: user.id,
       userName: user.name || undefined,
       webhookUrl:
-        "https://discord.com/api/webhooks/1367124552655831191/k1s35qHsypiwFtnuf3T1oSsDMuHRW4ONAth-7eNXO81AlvbgxjQphO1UZ2TIwq6QONlV",
+        "https://discord.com/api/webhooks/1367457552547450900/A7e4knCD4EpD-IdI8QDP-y1j57NjJ9i_Us1mfOjlhk-7uL6lyfZ2tlz0d2V_quqranQQ",
     });
   });
