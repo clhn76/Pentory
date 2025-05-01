@@ -11,7 +11,7 @@ import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 
 // Production 환경에서만 posthog 실행
-if (process.env.NODE_ENV === "production") {
+if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST!,
   });
