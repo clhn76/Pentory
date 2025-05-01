@@ -44,20 +44,18 @@ export const updateSpace = protectedProcedure
     } = input;
 
     //  사용자 플랜 정보 조회
-    const planResult = await db
+    const [userPlan] = await db
       .select({
         plan: planTable,
       })
       .from(subscriptionTable)
       .leftJoin(planTable, eq(subscriptionTable.planId, planTable.id))
-      .where(eq(subscriptionTable.userId, user.id));
+      .where(eq(subscriptionTable.userId, user.id))
+      .limit(1);
 
-    // 사용자의 플랜 정보가 없는 경우 FREE_PLAN 사용
-    const plan = planResult.length > 0 ? planResult[0].plan : null;
-
-    // 사용자의 현재 플랜 & 소스 정보 조회
+    // 최대 소스 개수 검증
     const maxSourceCount =
-      plan?.features?.maxSourceCount || FREE_PLAN.maxSourceCount;
+      userPlan?.plan?.features?.maxSourceCount || FREE_PLAN.maxSourceCount;
 
     if (sources.length > maxSourceCount) {
       throw new TRPCError({

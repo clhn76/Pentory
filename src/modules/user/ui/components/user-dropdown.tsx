@@ -13,8 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { USER_DROPDOWN_NAVS } from "@/modules/dashboard/config";
-import Link from "next/link";
+// import { USER_DROPDOWN_NAVS } from "@/modules/dashboard/config";
+// import Link from "next/link";
 
 interface UserDropdownProps {
   user: User;
@@ -52,15 +52,15 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {USER_DROPDOWN_NAVS.map((item) => (
+        {/* {USER_DROPDOWN_NAVS.map((item) => (
           <DropdownMenuItem asChild key={item.label}>
             <Link href={item.href}>
               <item.icon className="mr-2 h-4 w-4" />
               <span>{item.label}</span>
             </Link>
           </DropdownMenuItem>
-        ))}
-        <DropdownMenuSeparator />
+        ))} */}
+        {/* <DropdownMenuSeparator /> */}
         <DropdownMenuItem
           onClick={() => signOut({ callbackUrl: "/" })}
           className="text-rose-500 focus:text-rose-500"
