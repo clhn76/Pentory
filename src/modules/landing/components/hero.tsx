@@ -20,14 +20,14 @@ export const Hero = () => {
         translateY: 0,
         duration: 1,
         stagger: 0.5,
-        ease: "circ.out",
+        ease: "power2.out",
       }
     );
   }, []);
 
   return (
     <WavyBackground
-      colors={["#ccc", "#aaa", "#999"]}
+      colors={["#fff", "#ccc", "#aaa", "#999"]}
       waveOpacity={0.3}
       backgroundFill="black"
       blur={0}
