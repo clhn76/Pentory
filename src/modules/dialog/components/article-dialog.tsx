@@ -18,11 +18,13 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { ExternalLink } from "lucide-react";
+import { Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect } from "react";
 import { useArticleDialogStore } from "../stores/use-article-dialog-store";
 import DisplayAd from "@/modules/ads/components/display-ad";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export const ArticleDialog = () => {
   const isMobile = useIsMobile();
@@ -42,6 +44,18 @@ export const ArticleDialog = () => {
       window.removeEventListener("popstate", handlePopState);
     };
   }, [isOpen, closeDialog]);
+
+  const handleCopyContent = useCallback(async () => {
+    if (!articleData?.content) return;
+
+    try {
+      await navigator.clipboard.writeText(articleData.content);
+      toast.success("본문이 클립보드에 복사되었습니다.");
+    } catch (error) {
+      console.error(error);
+      toast.error("복사에 실패했습니다.");
+    }
+  }, [articleData?.content]);
 
   const renderContent = useCallback(
     () => (
@@ -67,17 +81,36 @@ export const ArticleDialog = () => {
               {format(new Date(articleData.createdAt), "PPP", { locale: ko })}
             </span>
           )}
-          {articleData?.source?.url && (
-            <a
-              href={articleData.source.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm flex items-center gap-1 text-primary hover:underline ml-auto"
+          <div className="flex items-center gap-2 ml-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopyContent}
+              className="text-sm flex items-center gap-1 text-muted-foreground hover:text-primary"
+              aria-label="본문 복사하기"
             >
-              <span>원본 링크</span>
-              <ExternalLink size={14} />
-            </a>
-          )}
+              <Copy size={14} />
+              <span>복사하기</span>
+            </Button>
+            {articleData?.source?.url && (
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="text-sm flex items-center gap-1 text-muted-foreground hover:text-primary"
+              >
+                <a
+                  href={articleData.source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="원본 링크로 이동"
+                >
+                  <ExternalLink size={14} />
+                  <span>원본 링크</span>
+                </a>
+              </Button>
+            )}
+          </div>
         </div>
         <DisplayAd className="h-[90px]" />
 
