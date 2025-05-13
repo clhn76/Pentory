@@ -47,7 +47,7 @@ export const createSpace = protectedProcedure
 
     // 최대 소스 개수 검증
     const maxSourceCount =
-      userPlan?.plan?.features?.maxSourceCount || FREE_PLAN.maxSourceCount;
+      userPlan?.plan?.features?.maxSpaceCount || FREE_PLAN.maxSpaceCount;
 
     if (sources.length > maxSourceCount) {
       throw new TRPCError({
