@@ -36,7 +36,7 @@ export const SpaceSourceItem = ({
   };
 
   return (
-    <div className="relative space-y-1 bg-muted/50 rounded-lg px-4 py-3">
+    <div className="relative space-y-1 bg-muted/50 rounded-lg px-4 py-3 w-full">
       {onRemove && (
         <Button
           onClick={onRemove}
@@ -82,7 +82,7 @@ export const SpaceSourceItem = ({
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <p className="text-sm font-medium">{name}</p>
+            <p className="text-sm font-medium line-clamp-1">{name}</p>
             {onNameChange && (
               <Button
                 onClick={() => setIsEditing(true)}
@@ -101,7 +101,9 @@ export const SpaceSourceItem = ({
           {type === "YOUTUBE_CHANNEL" ? "Youtube Channel" : "RSS Feed"}
         </Badge>
       </div>
-      <p className="text-muted-foreground text-sm">{url}</p>
+      <p className="text-muted-foreground text-sm line-clamp-2 break-all overflow-hidden text-ellipsis">
+        {url}
+      </p>
     </div>
   );
 };
