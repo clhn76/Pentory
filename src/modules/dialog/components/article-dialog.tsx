@@ -119,13 +119,13 @@ export const ArticleDialog = () => {
         <DisplayAd className="h-[90px]" />
       </div>
     ),
-    [articleData]
+    [articleData, handleCopyContent]
   );
 
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={closeDialog}>
-        <DrawerContent className="px-4 pb-8 data-[vaul-drawer-direction=bottom]:max-h-[90vh]">
+        <DrawerContent className="px-4 pb-8 data-[vaul-drawer-direction=bottom]:max-h-[95vh]">
           <DrawerHeader className="sr-only">
             <DrawerTitle></DrawerTitle>
             <DrawerDescription className="sr-only"></DrawerDescription>
