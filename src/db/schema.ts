@@ -17,7 +17,7 @@ export const userTable = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name"),
   email: text("email"),
-  emailVerified: timestamp("emailVerified", {
+  emailVerified: timestamp("email_verified", {
     mode: "date",
     withTimezone: true,
   }),
@@ -33,20 +33,20 @@ export const userTable = pgTable("user", {
 export const accountTable = pgTable(
   "account",
   {
-    userId: uuid("userId")
+    userId: uuid("user_id")
       .notNull()
       .references(() => userTable.id, { onDelete: "cascade" }),
     type: text("type").notNull(),
     provider: text("provider").notNull(),
-    providerAccountId: text("providerAccountId").notNull(),
-    refresh_token: text("refresh_token"),
-    refresh_token_expires_at: integer("refresh_token_expires_at"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: text("token_type"),
+    providerAccountId: text("provider_account_id").notNull(),
+    refreshToken: text("refresh_token"),
+    refreshTokenExpiresAt: integer("refresh_token_expires_at"),
+    accessToken: text("access_token"),
+    expiresAt: integer("expires_at"),
+    tokenType: text("token_type"),
     scope: text("scope"),
-    id_token: text("id_token"),
-    session_state: text("session_state"),
+    idToken: text("id_token"),
+    sessionState: text("session_state"),
   },
   (account) => [
     primaryKey({
@@ -56,15 +56,15 @@ export const accountTable = pgTable(
 );
 
 export const sessionTable = pgTable("session", {
-  sessionToken: text("sessionToken").primaryKey(),
-  userId: uuid("userId")
+  sessionToken: text("session_token").primaryKey(),
+  userId: uuid("user_id")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
 });
 
 export const verificationTokenTable = pgTable(
-  "verificationToken",
+  "verification_token",
   {
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
@@ -85,21 +85,21 @@ export const verificationTokenTable = pgTable(
 export const authenticatorTable = pgTable(
   "authenticator",
   {
-    credentialID: text("credentialID").notNull().unique(),
-    userId: uuid("userId")
+    credentialId: text("credential_id").notNull().unique(),
+    userId: uuid("user_id")
       .notNull()
       .references(() => userTable.id, { onDelete: "cascade" }),
-    providerAccountId: text("providerAccountId").notNull(),
-    credentialPublicKey: text("credentialPublicKey").notNull(),
+    providerAccountId: text("provider_account_id").notNull(),
+    credentialPublicKey: text("credential_public_key").notNull(),
     counter: integer("counter").notNull(),
-    credentialDeviceType: text("credentialDeviceType").notNull(),
-    credentialBackedUp: boolean("credentialBackedUp").notNull(),
+    credentialDeviceType: text("credential_device_type").notNull(),
+    credentialBackedUp: boolean("credential_backed_up").notNull(),
     transports: text("transports"),
   },
   (authenticator) => [
     {
       compositePK: primaryKey({
-        columns: [authenticator.userId, authenticator.credentialID],
+        columns: [authenticator.userId, authenticator.credentialId],
       }),
     },
   ]
@@ -109,7 +109,7 @@ export const authenticatorTable = pgTable(
 
 export const paymentMethodTable = pgTable("payment_method", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
+  userId: uuid("user_id")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" })
     .unique(),
@@ -134,7 +134,7 @@ export type PlanFeatures = {
   maxSourceCount: number;
 };
 export const planTable = pgTable("plan", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   price: integer("price").notNull(),
   discount: integer("discount"),
@@ -146,7 +146,7 @@ export const planTable = pgTable("plan", {
     .notNull()
     .defaultNow(),
   features: jsonb("features").$type<PlanFeatures>().notNull(),
-  tier: integer("tier").notNull(), // 플랜 변경시 업그레이드, 다운그레이드 결정하는 기준 (높을수록 상위 티어)
+  tier: integer("tier").notNull(),
   isDisplay: boolean("is_display").notNull().default(true),
   isPopular: boolean("is_popular").notNull().default(false),
 });
@@ -157,30 +157,27 @@ export type SubscriptionStatus =
   | "CANCELLED"
   | "CANCEL_PENDING"
   | "CHANGE_PENDING";
-// 유저의 현재 구독 정보
+
 export const subscriptionTable = pgTable("subscription", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
+  userId: uuid("user_id")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" })
     .unique(),
-  planId: uuid("planId")
+  planId: text("plan_id")
     .notNull()
     .references(() => planTable.id),
   status: text("status").$type<SubscriptionStatus>().notNull(),
-  // 최초 구독 생성일
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true,
   })
     .notNull()
     .defaultNow(),
-  // 현재 플랜 시작일
   startAt: timestamp("start_at", {
     mode: "date",
     withTimezone: true,
   }).notNull(),
-  // 현재 플랜 종료일
   endAt: timestamp("end_at", {
     mode: "date",
     withTimezone: true,
@@ -188,16 +185,16 @@ export const subscriptionTable = pgTable("subscription", {
 });
 
 export type SubscriptionScheduleType = "CANCEL" | "CHANGE";
-// 유저 구독 스케쥴
+
 export const subscriptionScheduleTable = pgTable("subscription_schedule", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
+  userId: uuid("user_id")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" })
     .unique(),
   type: text("type").$type<SubscriptionScheduleType>().notNull(),
-  fromPlanId: uuid("from_plan_id").references(() => planTable.id),
-  toPlanId: uuid("to_plan_id").references(() => planTable.id),
+  fromPlanId: text("from_plan_id").references(() => planTable.id),
+  toPlanId: text("to_plan_id").references(() => planTable.id),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true,
@@ -213,7 +210,7 @@ export const subscriptionScheduleTable = pgTable("subscription_schedule", {
 export type PaymentStatus = "SUBSCRIBE_PAID" | "UPGRADE_PAID" | "FAILED";
 export const paymentTable = pgTable("payment", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
+  userId: uuid("user_id")
     .notNull()
     .references(() => userTable.id),
   amount: integer("amount").notNull(),
@@ -235,7 +232,7 @@ export const paymentTable = pgTable("payment", {
 export type SpaceSummaryStyle = "DEFAULT" | "CUSTOM";
 export const spaceTable = pgTable("space", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
+  userId: uuid("user_id")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
@@ -265,7 +262,7 @@ export const spaceSourceTable = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     url: text("url").notNull(),
-    spaceId: uuid("spaceId")
+    spaceId: uuid("space_id")
       .notNull()
       .references(() => spaceTable.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
@@ -290,10 +287,10 @@ export const spaceSourceTable = pgTable(
 
 export const spaceSummaryTable = pgTable("space_summary", {
   id: uuid("id").primaryKey().defaultRandom(),
-  spaceId: uuid("spaceId")
+  spaceId: uuid("space_id")
     .notNull()
     .references(() => spaceTable.id, { onDelete: "cascade" }),
-  spaceSourceId: uuid("spaceSourceId")
+  spaceSourceId: uuid("space_source_id")
     .notNull()
     .references(() => spaceSourceTable.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
@@ -328,7 +325,7 @@ export const spaceSubscriptionTable = pgTable("space_subscription", {
 
 export const feedbackTable = pgTable("feedback", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
+  userId: uuid("user_id")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
