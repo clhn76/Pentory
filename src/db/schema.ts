@@ -17,7 +17,7 @@ export const userTable = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name"),
   email: text("email"),
-  emailVerified: timestamp("email_verified", {
+  emailVerified: timestamp("emailVerified", {
     mode: "date",
     withTimezone: true,
   }),
@@ -33,20 +33,20 @@ export const userTable = pgTable("user", {
 export const accountTable = pgTable(
   "account",
   {
-    userId: uuid("user_id")
+    userId: uuid("userId")
       .notNull()
       .references(() => userTable.id, { onDelete: "cascade" }),
     type: text("type").notNull(),
     provider: text("provider").notNull(),
-    providerAccountId: text("provider_account_id").notNull(),
-    refreshToken: text("refresh_token"),
-    refreshTokenExpiresAt: integer("refresh_token_expires_at"),
-    accessToken: text("access_token"),
-    expiresAt: integer("expires_at"),
-    tokenType: text("token_type"),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    refresh_token_expires_at: integer("refresh_token_expires_at"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
     scope: text("scope"),
-    idToken: text("id_token"),
-    sessionState: text("session_state"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
   },
   (account) => [
     primaryKey({
@@ -56,15 +56,15 @@ export const accountTable = pgTable(
 );
 
 export const sessionTable = pgTable("session", {
-  sessionToken: text("session_token").primaryKey(),
-  userId: uuid("user_id")
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: uuid("userId")
     .notNull()
     .references(() => userTable.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
 });
 
 export const verificationTokenTable = pgTable(
-  "verification_token",
+  "verificationToken",
   {
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
@@ -85,21 +85,21 @@ export const verificationTokenTable = pgTable(
 export const authenticatorTable = pgTable(
   "authenticator",
   {
-    credentialId: text("credential_id").notNull().unique(),
-    userId: uuid("user_id")
+    credentialID: text("credentialID").notNull().unique(),
+    userId: uuid("userId")
       .notNull()
       .references(() => userTable.id, { onDelete: "cascade" }),
-    providerAccountId: text("provider_account_id").notNull(),
-    credentialPublicKey: text("credential_public_key").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    credentialPublicKey: text("credentialPublicKey").notNull(),
     counter: integer("counter").notNull(),
-    credentialDeviceType: text("credential_device_type").notNull(),
-    credentialBackedUp: boolean("credential_backed_up").notNull(),
+    credentialDeviceType: text("credentialDeviceType").notNull(),
+    credentialBackedUp: boolean("credentialBackedUp").notNull(),
     transports: text("transports"),
   },
   (authenticator) => [
     {
       compositePK: primaryKey({
-        columns: [authenticator.userId, authenticator.credentialId],
+        columns: [authenticator.userId, authenticator.credentialID],
       }),
     },
   ]
