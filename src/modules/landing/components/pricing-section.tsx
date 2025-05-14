@@ -13,7 +13,7 @@ export const PricingSection = async () => {
   const yearlyPlans = plans.filter((plan) => plan.billingCycle === "YEAR");
 
   return (
-    <section className="py-20 bg-background">
+    <section className="pt-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">
@@ -28,7 +28,7 @@ export const PricingSection = async () => {
               <TabsTrigger value="MONTH">월간 플랜</TabsTrigger>
               <TabsTrigger value="YEAR">
                 연간 플랜
-                <Badge className="animate-bounce">15% 할인</Badge>
+                <Badge className="animate-bounce">20% 할인</Badge>
               </TabsTrigger>
             </TabsList>
             <TabsContent value="MONTH">
@@ -41,7 +41,11 @@ export const PricingSection = async () => {
                     billingCycle="MONTH"
                     actionElement={
                       <Link href="/dashboard/plans">
-                        <Button className="w-full" size="lg">
+                        <Button
+                          className="w-full"
+                          size="lg"
+                          variant="secondary"
+                        >
                           시작하기
                         </Button>
                       </Link>
@@ -60,7 +64,11 @@ export const PricingSection = async () => {
                     billingCycle="YEAR"
                     actionElement={
                       <Link href="/dashboard/plans">
-                        <Button className="w-full" size="lg">
+                        <Button
+                          className="w-full"
+                          size="lg"
+                          variant="secondary"
+                        >
                           시작하기
                         </Button>
                       </Link>
