@@ -1,8 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { planTable } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { InferSelectModel } from "drizzle-orm";
-import { CheckIcon } from "lucide-react";
+import { CheckCircleIcon } from "lucide-react";
 
 type Plan = InferSelectModel<typeof planTable>;
 
@@ -23,7 +24,7 @@ export const PlanCard = ({
   return (
     <Card
       className={cn(
-        "flex flex-col relative",
+        "p-3 pb-6 flex flex-col relative",
         plan.isPopular && "border-primary shadow-lg"
       )}
     >
@@ -50,26 +51,55 @@ export const PlanCard = ({
             )}
           </div>
         )}
-        <ul className="space-y-4 mb-8">
-          <li className="flex items-center text-card-foreground">
-            <CheckIcon className="size-5 mr-2" /> 최대{" "}
-            {plan.features.maxSpaceCount}
-            개의 요약 스페이스
-          </li>
-          <li className="flex items-center text-card-foreground">
-            <CheckIcon className="size-5 mr-2" />
-            스페이스당 최대 {plan.features.maxSourceCount}개의 소스
-          </li>
-          <li className="flex items-center text-card-foreground">
-            <CheckIcon className="size-5 mr-2" />
-            모든 광고 제거
-          </li>
-          <li className="flex items-center text-card-foreground">
-            <CheckIcon className="size-5 mr-2" />
-            공개,비공개 요약 스페이스 생성 가능
-          </li>
-        </ul>
-        {actionElement}
+        <div className="space-y-4 mb-8">
+          <Table>
+            <TableBody>
+              <TableRow className="border-b border-border/50">
+                <TableCell className="text-left py-4">
+                  <span className="text-base font-medium text-foreground">
+                    최대 요약 스페이스
+                  </span>
+                </TableCell>
+                <TableCell className="text-right py-4">
+                  <span className="text-base font-semibold text-primary">
+                    {plan.features.maxSpaceCount}개
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow className="border-b border-border/50">
+                <TableCell className="text-left py-4">
+                  <span className="text-base font-medium text-foreground">
+                    스페이스당 최대 소스
+                  </span>
+                </TableCell>
+                <TableCell className="text-right py-4">
+                  <span className="text-base font-semibold text-primary">
+                    {plan.features.maxSourceCount}개
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="text-left py-4">
+                  <span className="text-base font-medium text-foreground">
+                    스페이스 공개 설정
+                  </span>
+                </TableCell>
+                <TableCell className="text-right py-4">
+                  <span className="text-base font-semibold text-primary">
+                    공개/비공개
+                  </span>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <div className="flex items-center gap-2 px-1">
+            <CheckCircleIcon className="size-5 text-primary" />
+            <span className="text-base font-medium text-foreground">
+              모든 광고 제거
+            </span>
+          </div>
+        </div>
+        <div className="mt-auto">{actionElement}</div>
       </CardContent>
     </Card>
   );
