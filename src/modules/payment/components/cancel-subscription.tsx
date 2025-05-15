@@ -63,6 +63,10 @@ export const CancelSubscription = () => {
     }
   };
 
+  if (!userInfo?.subscription) {
+    return null;
+  }
+
   if (
     userInfo?.subscription?.status === "CANCELLED" ||
     userInfo?.subscription?.status === "PAST_DUE"

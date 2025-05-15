@@ -144,7 +144,7 @@ export const Plans = ({ plans }: PlansProps) => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="MONTH">
-          <div className="grid md:grid-cols-2 gap-8 mt-12">
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
             {monthlyPlans.map((plan) => (
               <PlanCard
                 key={plan.id}
@@ -176,7 +176,7 @@ export const Plans = ({ plans }: PlansProps) => {
           </div>
         </TabsContent>
         <TabsContent value="YEAR">
-          <div className="grid md:grid-cols-2 gap-8 mt-12">
+          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
             {yearlyPlans.map((plan) => (
               <PlanCard
                 key={plan.id}

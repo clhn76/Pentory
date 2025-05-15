@@ -56,7 +56,26 @@ export const SubscriptionInfo = () => {
     });
   };
 
-  if (!currentSubscription) return null;
+  if (!currentSubscription)
+    return (
+      <Card>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="mb-4 rounded-full bg-muted p-3">
+              <InfoIcon className="size-6 text-muted-foreground" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold">구독 정보가 없습니다</h3>
+            <p className="mb-6 text-sm text-muted-foreground">
+              아직 구독 중인 플랜이 없습니다. 플랜을 구독하여 서비스를
+              이용해보세요.
+            </p>
+            <Link href="/dashboard/plans">
+              <Button>플랜 구독하기</Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
 
   return (
     <Card>
