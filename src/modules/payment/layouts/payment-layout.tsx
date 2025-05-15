@@ -3,5 +3,5 @@ interface PaymentLayoutProps {
 }
 
 export const PaymentLayout = ({ children }: PaymentLayoutProps) => {
-  return <div className="container max-w-screen-md mx-auto">{children}</div>;
+  return <div className="container max-w-screen-xl mx-auto">{children}</div>;
 };

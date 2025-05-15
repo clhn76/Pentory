@@ -1,11 +1,4 @@
-import {
-  ArrowRightLeftIcon,
-  BookmarkIcon,
-  CreditCardIcon,
-  GlobeIcon,
-  HomeIcon,
-  LibraryIcon,
-} from "lucide-react";
+import { BookmarkIcon, GlobeIcon, HomeIcon, LibraryIcon } from "lucide-react";
 
 export const DASHBOARD_GROUPS = [
   {
@@ -37,18 +30,5 @@ export const DASHBOARD_GROUPS = [
         href: "/dashboard/subscribe-spaces",
       },
     ],
-  },
-];
-
-export const USER_DROPDOWN_NAVS = [
-  {
-    label: "결제",
-    icon: CreditCardIcon,
-    href: "/dashboard/billing",
-  },
-  {
-    label: "플랜 변경",
-    icon: ArrowRightLeftIcon,
-    href: "/dashboard/plans",
   },
 ];
