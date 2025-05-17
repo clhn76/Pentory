@@ -7,10 +7,10 @@ import {
   subscriptionTable,
 } from "@/db/schema";
 import { z } from "zod";
-import { runLambdaSpaceSummary } from "./utils";
 import { and, eq, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { FREE_PLAN } from "@/modules/payment/config";
+import { awsManager } from "@/lib/aws-manager";
 
 export const updateSpace = protectedProcedure
   .input(
@@ -156,7 +156,7 @@ export const updateSpace = protectedProcedure
 
       // 새로운 소스가 있는 경우에만 요약 요청
       if (sourcesToAdd.length > 0) {
-        await runLambdaSpaceSummary(spaceId);
+        await awsManager.runLambdaSpaceSummary(spaceId);
       }
     });
   });

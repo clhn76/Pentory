@@ -1,7 +1,7 @@
 import { CTASection } from "../components/cta-section";
 import { FeaturesSection } from "../components/features-section";
 import { Hero } from "../components/hero";
-import { PricingSection } from "../components/pricing-section";
+// import { PricingSection } from "../components/pricing-section";
 import { UseCasesSection } from "../components/use-cases-section";
 
 export const HomePage = () => {
@@ -17,7 +17,7 @@ export const HomePage = () => {
       <UseCasesSection />
 
       {/* 요금제 */}
-      <PricingSection />
+      {/* <PricingSection /> */}
 
       {/* CTA 섹션 */}
       <CTASection />

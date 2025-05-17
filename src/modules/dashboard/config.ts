@@ -1,4 +1,10 @@
-import { BookmarkIcon, GlobeIcon, HomeIcon, LibraryIcon } from "lucide-react";
+import {
+  BookmarkIcon,
+  GlobeIcon,
+  HomeIcon,
+  LibraryIcon,
+  PenLineIcon,
+} from "lucide-react";
 
 export const DASHBOARD_GROUPS = [
   {
@@ -12,7 +18,17 @@ export const DASHBOARD_GROUPS = [
     ],
   },
   {
-    groupLabel: "요약 정리",
+    groupLabel: "개별 요약",
+    items: [
+      {
+        label: "URL 요약",
+        icon: PenLineIcon,
+        href: "/dashboard/summary/url",
+      },
+    ],
+  },
+  {
+    groupLabel: "요약 스페이스",
     items: [
       {
         label: "스페이스 둘러보기",

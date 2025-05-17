@@ -24,7 +24,7 @@ export const PlanCard = ({
   return (
     <Card
       className={cn(
-        "p-3 pb-6 flex flex-col relative",
+        "p-3 py-6 flex flex-col relative",
         plan.isPopular && "border-primary shadow-lg"
       )}
     >
