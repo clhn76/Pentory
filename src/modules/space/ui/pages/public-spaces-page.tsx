@@ -28,8 +28,15 @@ export const PublicSpacesPage = () => {
 
   return (
     <div className="container py-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">스페이스 둘러보기</h1>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+        <div className="space-y-3">
+          <h1 className="text-2xl font-bold">스페이스 둘러보기</h1>
+          <p className="text-lg text-muted-foreground max-w-screen-md text-balance break-keep leading-relaxed tracking-tight">
+            스페이스 둘러보기에서는 다른 사용자가 생성한 공개 요약 스페이스를
+            둘러볼 수 있고 해당 스페이스를 구독할 수 있습니다.
+          </p>
+        </div>
+
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
