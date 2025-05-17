@@ -1,3 +1,3 @@
-import { SpaceIdPage } from "@/modules/space/ui/pages/space-id-page";
+import { SpaceIdPage } from "@/features/space/ui/pages/space-id-page";
 
 export default SpaceIdPage;

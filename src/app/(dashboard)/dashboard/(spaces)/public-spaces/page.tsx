@@ -1,3 +1,3 @@
-import { PublicSpacesPage } from "@/modules/space/ui/pages/public-spaces-page";
+import { PublicSpacesPage } from "@/features/space/ui/pages/public-spaces-page";
 
 export default PublicSpacesPage;
