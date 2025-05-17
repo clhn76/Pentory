@@ -32,7 +32,7 @@ export const SummaryUrlPage = () => {
       onSuccess: () => {
         toast.success("요약 완료");
         queryClient.invalidateQueries({
-          queryKey: trpc.summaryRouter.getUserSummaries.infiniteQueryKey(),
+          queryKey: trpc.summaryRouter.getUserSummaries.queryKey(),
         });
       },
       onError: (error) => {
