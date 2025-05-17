@@ -3,8 +3,8 @@
 import { TRPCReactProvider } from "@/trpc/client";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { ArticleDialog } from "../modules/dialog/components/article-dialog";
-import { GlobalAlertDialog } from "../modules/dialog/components/global-alert-dialog";
+import { ArticleDialog } from "../features/dialog/components/article-dialog";
+import { GlobalAlertDialog } from "../features/dialog/components/global-alert-dialog";
 import { Toaster } from "./ui/sonner";
 import { useIsMounted } from "@/hooks/use-is-mounted";
 import posthog from "posthog-js";
