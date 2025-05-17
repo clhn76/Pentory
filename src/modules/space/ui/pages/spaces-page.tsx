@@ -1,16 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { SpacesGrid, SpacesGridSkeleton } from "../components/space-grid";
 import {
   SpacesSortButtons,
   SpacesSortButtonsSkeleton,
 } from "../components/space-sort-buttons";
-import { useTRPC } from "@/trpc/client";
-import { useState } from "react";
-import { SpacesGrid, SpacesGridSkeleton } from "../components/space-grid";
-import { useQuery } from "@tanstack/react-query";
 
 type SortOption = "newest" | "oldest" | "name" | "summaryCount";
 
@@ -46,8 +46,16 @@ export const SpacesPage = () => {
 
   return (
     <div className="container py-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">전체 요약 스페이스</h1>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+        <div className="space-y-3">
+          <h1 className="text-2xl font-bold">전체 요약 스페이스</h1>
+          <p className="text-lg text-muted-foreground max-w-screen-md text-balance break-keep leading-relaxed tracking-tight">
+            요약 스페이스는 관심 있는 콘텐츠를 자동으로 모아서 매일매일
+            요약해주는 개인화된 공간입니다. 유튜브 채널 또는 블로그 RSS URL을
+            등록하면 매일 발행되는 신규 콘텐츠를 자동으로 AI가 요약해 드립니다.
+          </p>
+        </div>
+
         <Link href="/dashboard/spaces/new">
           <Button size="lg">
             <PlusIcon className="w-4 h-4 mr-2" />새 스페이스 만들기

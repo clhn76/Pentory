@@ -48,7 +48,7 @@ export const SummaryUrlPage = () => {
   return (
     <div className="container py-12 md:py-24 h-full flex flex-col items-center">
       <h1 className="text-2xl md:text-4xl font-bold mb-2">URL 요약</h1>
-      <p className="text-center text-base md:text-lg text-muted-foreground mb-6">
+      <p className="text-center text-base md:text-lg text-muted-foreground mb-6 tracking-tight">
         유튜브, 블로그, 뉴스 등의 URL 주소만으로 콘텐츠의 핵심내용을 요약 정리해
         드립니다.
       </p>
@@ -83,7 +83,7 @@ export const SummaryUrlPage = () => {
 
         <section className="space-y-4">
           {summaries.data?.items.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-10">
+            <p className="text-center text-sm text-muted-foreground py-10">
               요약 기록이 없습니다.
             </p>
           ) : (
