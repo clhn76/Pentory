@@ -73,7 +73,7 @@ export const ArticleDialog = () => {
           />
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {articleData?.source && (
+          {articleData?.source?.name && (
             <Badge variant="secondary">{articleData.source.name}</Badge>
           )}
           {articleData?.createdAt && (

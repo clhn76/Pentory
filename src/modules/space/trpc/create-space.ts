@@ -5,12 +5,12 @@ import {
   spaceTable,
   subscriptionTable,
 } from "@/db/schema";
+import { awsManager } from "@/lib/aws-manager";
 import { FREE_PLAN } from "@/modules/payment/config";
 import { protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { runLambdaSpaceSummary } from "./utils";
 
 export const createSpace = protectedProcedure
   .input(
@@ -88,7 +88,7 @@ export const createSpace = protectedProcedure
         );
 
         // 신규 스페이스에 소스가 있으면 요약 요청
-        await runLambdaSpaceSummary(newSpace.id);
+        await awsManager.runLambdaSpaceSummary(newSpace.id);
       }
 
       return newSpace;

@@ -515,3 +515,5 @@ export const feedbackRelations = relations(feedbackTable, ({ one }) => ({
     references: [userTable.id],
   }),
 }));
+
+export { summaryTable, summaryRelations } from "@/modules/summary/db/schema";

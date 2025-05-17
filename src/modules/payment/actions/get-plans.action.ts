@@ -10,4 +10,4 @@ export const getPlans = unstable_cache(async () => {
     .where(eq(planTable.isDisplay, true))
     .orderBy(asc(planTable.tier));
   return plans;
-}, ["get-plans"]);
+}, ["getPlans"]);
