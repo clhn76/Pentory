@@ -103,9 +103,9 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
 
   const createSpace = useMutation(
     trpc.spaceRouter.createSpace.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("스페이스 생성 완료");
-        router.push("/dashboard");
+        router.push(`/dashboard/spaces/${data.id}`);
         queryClient.invalidateQueries({
           queryKey: trpc.spaceRouter.getSpaces.queryKey(),
         });
@@ -114,6 +114,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
         });
       },
       onError: (error) => {
+        console.log(error);
         toast.error(error.message);
       },
     })

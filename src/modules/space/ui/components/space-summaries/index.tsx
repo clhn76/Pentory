@@ -91,7 +91,8 @@ export const SpaceSummaries = ({
             요약 콘텐츠가 없습니다.
           </p>
           <p className="text-sm text-muted-foreground">
-            요약 소스가 등록된 후 일정 시간 후 요약 콘텐츠가 발행됩니다.
+            설정에서 요약 소스가 등록된 후 일정 시간 후 요약 콘텐츠가
+            발행됩니다.
           </p>
         </div>
       ) : (

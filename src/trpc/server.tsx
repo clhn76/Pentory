@@ -62,5 +62,5 @@ export const onError = ({
   req: Request;
 }) => {
   console.error(`❌ [TRPC ERROR] ${path} ${type}: ${error.message}`);
-  throw error;
+  // throw error;
 };
