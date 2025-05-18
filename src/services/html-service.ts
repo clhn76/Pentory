@@ -50,21 +50,10 @@ class HtmlService {
         .filter((keyword) => keyword.length > 0) || [];
 
     // Get thumbnail URL
-    let thumbnailUrl = "";
-    // Try Open Graph image
-    thumbnailUrl = $('meta[property="og:image"]').attr("content") || "";
-    // Try Twitter Card image
-    if (!thumbnailUrl) {
-      thumbnailUrl = $('meta[name="twitter:image"]').attr("content") || "";
-    }
-    // Try meta image
-    if (!thumbnailUrl) {
-      thumbnailUrl = $('meta[property="image"]').attr("content") || "";
-    }
-    // Try first image in the content
-    if (!thumbnailUrl) {
-      thumbnailUrl = $("img").first().attr("src") || "";
-    }
+    const thumbnailUrl =
+      $('meta[property="og:image"]').attr("content") ||
+      $('meta[name="twitter:image"]').attr("content") ||
+      "";
 
     // Get main content
     const mainContent = $("body")
