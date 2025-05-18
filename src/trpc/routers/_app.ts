@@ -1,10 +1,10 @@
-import { paymentRouter } from "@/features/payment/trpc";
+import { paymentRouter } from "@/modules/payment/trpc";
 import { createTRPCRouter } from "../init";
-import { spaceRouter } from "@/features/space/trpc";
-import { userRouter } from "@/features/user/trpc";
-import { feedbackRouter } from "@/features/feedback/trpc/router";
-import { tossPaymentsRouter } from "@/features/toss-payments/trpc/router";
-import { summaryRouter } from "@/features/summary/trpc/router";
+import { spaceRouter } from "@/modules/space/trpc";
+import { userRouter } from "@/modules/user/trpc";
+import { feedbackRouter } from "@/modules/feedback/trpc/router";
+import { tossPaymentsRouter } from "@/modules/toss-payments/trpc/router";
+import { summaryRouter } from "@/modules/summary/trpc/router";
 
 export const appRouter = createTRPCRouter({
   paymentRouter: paymentRouter,

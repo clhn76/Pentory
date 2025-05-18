@@ -1,3 +1,3 @@
-import { SummaryUrlPage } from "@/features/summary/pages/summary-url-page";
+import { SummaryUrlPage } from "@/modules/summary/pages/summary-url-page";
 
 export default SummaryUrlPage;
