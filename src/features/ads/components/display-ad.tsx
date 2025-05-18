@@ -1,9 +1,9 @@
 "use client";
 
-import { useGetUserInfo } from "@/features/user/hooks/use-get-user-info.hook";
 import { cn } from "@/lib/utils";
+import useAdsense from "@/modules/ads/hooks/use-adsense.hook";
+import { useGetUserInfo } from "@/modules/user/hooks/use-get-user-info.hook";
 import { ClassValue } from "clsx";
-import useAdsense from "../hooks/use-adsense.hook";
 
 interface Props {
   className?: ClassValue;

@@ -1,4 +1,4 @@
-import { auth } from "@/features/auth";
+import { auth } from "@/modules/auth";
 
 const protectedRoutes = ["/dashboard"];
 

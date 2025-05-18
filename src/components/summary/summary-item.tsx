@@ -1,6 +1,6 @@
 "use client";
 
-import { useArticleDialogStore } from "@/features/dialog/stores/use-article-dialog-store";
+import { useArticleDialogStore } from "@/modules/dialog/stores/use-article-dialog-store";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";

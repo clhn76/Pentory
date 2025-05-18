@@ -1,3 +1,3 @@
-import { AuthLayout } from "@/features/auth/ui/layouts/auth-layout";
+import { AuthLayout } from "@/modules/auth/ui/layouts/auth-layout";
 
 export default AuthLayout;
