@@ -239,6 +239,7 @@ export const spaceTable = pgTable("space", {
   description: text("description"),
   summaryStyle: text("summary_style")
     .$type<SpaceSummaryStyle>()
+    .notNull()
     .default("DEFAULT"),
   customPrompt: text("custom_prompt"),
   isPublic: boolean("is_public").notNull().default(true),

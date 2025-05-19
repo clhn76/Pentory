@@ -12,7 +12,10 @@
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed:subscriptions": "bun run src/scripts/seed-subscription-plans.ts"
+    "db:seed:subscriptions": "bun run src/scripts/seed-subscription-plans.ts",
+    "lambda:build": "bun run src/lambda/build.ts",
+    "lambda:test": "vitest run src/lambda/tests/index.test.ts",
+    "lambda:deploy": "bun run lambda:test && bun run lambda:build && cd src/lambda/dist && zip -r ../../../lambda.zip . && cd ../../.. && aws lambda update-function-code --function-name Pentory --zip-file fileb://lambda.zip && rm lambda.zip"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.18",
@@ -92,6 +95,7 @@
     "three": "^0.175.0",
     "tw-animate-css": "^1.3.0",
     "vaul": "^1.1.2",
+    "ws": "^8.18.2",
     "youtubei.js": "^13.4.0",
     "zod": "^3.24.4",
     "zustand": "^5.0.4"
@@ -104,11 +108,15 @@
     "@types/node": "^20.17.47",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "@types/ws": "^8.18.1",
     "concurrently": "^9.1.2",
+    "dotenv": "^16.5.0",
     "drizzle-kit": "^0.30.6",
+    "esbuild": "^0.25.4",
     "eslint": "^9.27.0",
     "eslint-config-next": "15.2.3",
     "tailwindcss": "^4.1.7",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.3"
   }
 }

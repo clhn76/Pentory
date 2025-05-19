@@ -1,5 +1,5 @@
 import { aiService } from "@/services/ai-service";
-import { htmlService } from "@/services/html-service";
+import { htmlParsingService } from "@/services/html-parsing-service";
 import { youtubeService } from "@/services/youtube-service";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -31,7 +31,7 @@ export const POST = async (req: NextRequest) => {
     if (isYoutubeUrl) {
       contentData = await youtubeService.getContentDataFromUrl(url);
     } else {
-      contentData = await htmlService.getContentDataFromUrl(url);
+      contentData = await htmlParsingService.getContentDataFromUrl(url);
     }
 
     const systemPrompt = `

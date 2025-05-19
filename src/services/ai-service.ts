@@ -1,5 +1,10 @@
-import { createDataStreamResponse, JSONValue, streamText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import {
+  createDataStreamResponse,
+  generateText,
+  JSONValue,
+  streamText,
+} from "ai";
 
 class AIService {
   private static instance: AIService;
@@ -58,7 +63,36 @@ class AIService {
       } catch (error) {
         console.error(`❌ API Key ${i + 1} failed:`, error);
         if (i === this.apiKeys.length - 1) {
-          throw new Error("All API keys failed to process the request");
+          throw new Error("❌ All API keys failed to process the request");
+        }
+      }
+    }
+  }
+
+  public async generateTextWithRetry({
+    system,
+    prompt,
+  }: {
+    system: string;
+    prompt: string;
+  }) {
+    for (let i = 0; i < this.apiKeys.length; i++) {
+      const apiKey = this.apiKeys[i];
+      try {
+        const genAI = createGoogleGenerativeAI({
+          apiKey,
+        });
+        const model = genAI.languageModel("gemini-2.0-flash");
+
+        return await generateText({
+          model,
+          system,
+          prompt,
+        });
+      } catch (error) {
+        console.error(`❌ API Key ${i + 1} failed:`, error);
+        if (i === this.apiKeys.length - 1) {
+          throw new Error("❌ All API keys failed to process the request");
         }
       }
     }
