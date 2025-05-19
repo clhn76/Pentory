@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DisplayAd from "@/modules/ads/components/display-ad";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ContentData } from "../types";
+import { AdsenseDisplayAd } from "@/modules/common/adsense/components/adsense-display-ad";
 
 interface SummaryResultProps {
   summary: string;
@@ -81,7 +81,7 @@ export const SummaryResult = ({
 
               <TabsContent value="summary" className="mt-4">
                 <div className="relative">
-                  <DisplayAd className="mb-2" />
+                  <AdsenseDisplayAd className="mb-2" />
 
                   <div className="flex justify-end gap-2 mb-6">
                     {contentData?.url && (
@@ -110,7 +110,7 @@ export const SummaryResult = ({
                     </Button>
                   </div>
                   <Markdown>{summary}</Markdown>
-                  <DisplayAd />
+                  <AdsenseDisplayAd />
                 </div>
               </TabsContent>
 
