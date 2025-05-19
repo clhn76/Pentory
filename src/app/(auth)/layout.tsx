@@ -1,3 +1,3 @@
-import { AuthLayout } from "@/modules/auth/ui/layouts/auth-layout";
+import { AuthLayout } from "@/modules/common/next-auth/layouts/auth-layout";
 
 export default AuthLayout;

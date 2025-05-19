@@ -16,8 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkout } from "@/modules/toss-payments/components/checkout";
-import { useGetUserInfo } from "@/modules/user/hooks/use-get-user-info.hook";
+// import { useGetUserInfo } from "@/modules/user/hooks/use-get-user-info.hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -52,7 +51,7 @@ const formSchema = z.object({
 });
 
 export const PlanPurchaseForm = ({ plans }: PlanPurchaseFormProps) => {
-  const userInfo = useGetUserInfo();
+  // const userInfo = useGetUserInfo();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -196,14 +195,6 @@ export const PlanPurchaseForm = ({ plans }: PlanPurchaseFormProps) => {
         {/* <Button type="submit" className="w-full" size="lg">
           구매하기
         </Button> */}
-
-        <Checkout
-          amount={totalAmount}
-          orderName={`${selectedPlan?.name} 구매`}
-          userName={userInfo?.name || ""}
-          userEmail={userInfo?.email || ""}
-          userId={userInfo?.id || ""}
-        />
       </form>
     </Form>
   );

@@ -5,6 +5,7 @@ import {
   LibraryIcon,
   PenLineIcon,
 } from "lucide-react";
+import { SPACE_HREF_PREFIX } from "../space/config";
 
 export const DASHBOARD_GROUPS = [
   {
@@ -33,17 +34,17 @@ export const DASHBOARD_GROUPS = [
       {
         label: "스페이스 둘러보기",
         icon: GlobeIcon,
-        href: "/dashboard/public-spaces",
+        href: SPACE_HREF_PREFIX.PUBLIC,
       },
       {
         label: "개인 스페이스",
         icon: LibraryIcon,
-        href: "/dashboard/spaces",
+        href: SPACE_HREF_PREFIX.MY,
       },
       {
         label: "구독 스페이스",
         icon: BookmarkIcon,
-        href: "/dashboard/subscribe-spaces",
+        href: SPACE_HREF_PREFIX.SUBSCRIBE,
       },
     ],
   },

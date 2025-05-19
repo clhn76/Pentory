@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import localFont from "next/font/local";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
-import Script from "next/script";
+import { AdsenseProvider } from "@/modules/common/adsense/layouts/adsense-provider";
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
 
 const pretendard = localFont({
   src: [
@@ -56,18 +56,9 @@ export default function RootLayout({
         className={cn(pretendard.className, "antialiased")}
         suppressHydrationWarning
       >
-        {process.env.NODE_ENV !== "development" && (
-          <>
-            {/* Adsense */}
-            <Script
-              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8222693996695565"
-              crossOrigin="anonymous"
-              strategy="afterInteractive"
-            />
-          </>
-        )}
-
-        <Providers>{children}</Providers>
+        <AdsenseProvider>
+          <Providers>{children}</Providers>
+        </AdsenseProvider>
       </body>
     </html>
   );

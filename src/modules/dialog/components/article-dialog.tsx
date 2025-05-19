@@ -24,7 +24,7 @@ import { useCallback, useEffect } from "react";
 import { useArticleDialogStore } from "../stores/use-article-dialog-store";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import DisplayAd from "@/modules/ads/components/display-ad";
+import { AdsenseDisplayAd } from "@/modules/common/adsense/components/adsense-display-ad";
 
 export const ArticleDialog = () => {
   const isMobile = useIsMobile();
@@ -112,11 +112,11 @@ export const ArticleDialog = () => {
             )}
           </div>
         </div>
-        <DisplayAd className="h-[90px]" />
+        <AdsenseDisplayAd className="h-[90px]" />
 
         <Markdown>{articleData?.content}</Markdown>
 
-        <DisplayAd className="h-[90px]" />
+        <AdsenseDisplayAd className="h-[90px]" />
       </div>
     ),
     [articleData, handleCopyContent]
