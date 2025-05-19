@@ -33,9 +33,6 @@ class HtmlParsingService {
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    // Remove unnecessary elements
-    $("script, style, meta, link, noscript, iframe, svg").remove();
-
     // Get meta information
     const title = $("title").text().trim() || "";
     const description =
@@ -56,12 +53,7 @@ class HtmlParsingService {
       "";
 
     // Get main content
-    const mainContent = $("body")
-      .clone() // Clone to avoid modifying the original
-      .find("script, style, meta, link, noscript, iframe, svg")
-      .remove()
-      .end()
-      .text()
+    const mainContent = ($("article").text() || $("body").text())
       .replace(/\s+/g, " ") // Replace multiple spaces with single space
       .replace(/\n+/g, " ") // Replace newlines with space
       .trim();
