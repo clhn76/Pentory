@@ -1,4 +1,3 @@
-import { protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
 import {
   planTable,
@@ -6,11 +5,12 @@ import {
   spaceTable,
   subscriptionTable,
 } from "@/db/schema";
-import { z } from "zod";
-import { and, eq, sql } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
 import { FREE_PLAN } from "@/modules/payment/config";
-import { awsManager } from "@/lib/aws-manager";
+import { awsService } from "@/services/aws-service";
+import { protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
+import { and, eq, sql } from "drizzle-orm";
+import { z } from "zod";
 
 export const updateSpace = protectedProcedure
   .input(
@@ -156,7 +156,12 @@ export const updateSpace = protectedProcedure
 
       // 새로운 소스가 있는 경우에만 요약 요청
       if (sourcesToAdd.length > 0) {
-        await awsManager.runLambdaSpaceSummary(spaceId);
+        await awsService.invokeLambdaFunction({
+          type: "SUMMARY_SPACE",
+          body: {
+            spaceId,
+          },
+        });
       }
     });
   });

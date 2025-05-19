@@ -22,9 +22,9 @@ import { Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect } from "react";
 import { useArticleDialogStore } from "../stores/use-article-dialog-store";
-import DisplayAd from "@/features/ads/components/display-ad";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import DisplayAd from "@/modules/ads/components/display-ad";
 
 export const ArticleDialog = () => {
   const isMobile = useIsMobile();

@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/src/lambda/dist
 /serverless-api/node_modules
 /serverless-api/dist
 /serverless-api/lambda.zip

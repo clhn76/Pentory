@@ -26,7 +26,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { inferRouterOutputs } from "@trpc/server";
-import { AppRouter } from "@/trpc/routers/_app";
+import { AppRouter } from "@/trpc/routers";
 import { AddSpaceSource } from "./add-space-source";
 import { SpaceSourceItem } from "./space-source-item";
 import { FREE_PLAN } from "@/modules/payment/config";
