@@ -1,11 +1,14 @@
 import * as cheerio from "cheerio";
 
-interface ContentResult {
+export interface TopContent {
   title: string;
   description: string;
-  content: string;
-  keywords: string[];
-  thumbnailUrl: string;
+  thumbnailImage: string;
+  author: {
+    name: string;
+    profileImage: string;
+  };
+  publishDate: string;
 }
 
 class HtmlParsingService {
@@ -20,7 +23,7 @@ class HtmlParsingService {
     return HtmlParsingService.instance;
   }
 
-  public async getContentDataFromUrl(url: string): Promise<ContentResult> {
+  public async getContentDataFromUrl(url: string) {
     // Naver Blog URL 형식 변환
     if (
       url.startsWith("https://blog.naver.com") ||
@@ -94,6 +97,62 @@ class HtmlParsingService {
       }
     });
     return newLinks;
+  }
+
+  public async getTopNaverBlogContents(keyword: string) {
+    const res = await this.fetcher(
+      `https://search.naver.com/search.naver?ssc=tab.blog.all&sm=tab_jum&query=${encodeURIComponent(
+        keyword
+      )}`
+    );
+    const htmlContent = await res.text();
+    const $ = cheerio.load(htmlContent);
+    const blogs: TopContent[] = [];
+
+    // 블로그 검색 결과 리스트 아이템들을 선택
+    $(".lst_view > li.bx").each((index, element) => {
+      const $item = $(element);
+
+      // 함께 볼만한 검색어 섹션은 제외
+      if ($item.hasClass("type_join")) {
+        return;
+      }
+
+      // 제목
+      const title = $item.find(".title_link").text().trim();
+
+      // 설명
+      const description = $item.find(".dsc_link").text().trim();
+
+      // 대표 이미지 (첫 번째 썸네일)
+      const thumbnailImage =
+        $item.find(".mod_ugc_thumb_area img").attr("src") || "";
+
+      // 작성자 정보
+      const $userInfo = $item.find(".user_box_inner");
+      const author = {
+        name: $userInfo.find(".name").text().trim(),
+        profileImage:
+          $userInfo.find(".user_thumb .thumb_link img").attr("src") || "",
+      };
+
+      // 작성일자
+      const publishDate = $userInfo.find(".sub").text().trim();
+
+      blogs.push({
+        title,
+        description,
+        thumbnailImage,
+        author,
+        publishDate,
+      });
+    });
+
+    return {
+      query: keyword,
+      totalResults: blogs.length,
+      topContents: blogs,
+    };
   }
 
   private async fetcher(url: string) {

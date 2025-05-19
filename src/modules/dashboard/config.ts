@@ -3,7 +3,8 @@ import {
   GlobeIcon,
   HomeIcon,
   LibraryIcon,
-  PenLineIcon,
+  LinkIcon,
+  // PenIcon,
 } from "lucide-react";
 import { SPACE_HREF_PREFIX } from "../space/config";
 
@@ -18,12 +19,22 @@ export const DASHBOARD_GROUPS = [
       },
     ],
   },
+  // {
+  //   groupLabel: "콘텐츠",
+  //   items: [
+  //     {
+  //       label: "콘텐츠 생성",
+  //       icon: PenIcon,
+  //       href: "/dashboard/contents/create",
+  //     },
+  //   ],
+  // },
   {
     groupLabel: "개별 요약",
     items: [
       {
         label: "URL 요약",
-        icon: PenLineIcon,
+        icon: LinkIcon,
         href: "/dashboard/summary/url",
       },
     ],
