@@ -9,6 +9,7 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRightIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
+import { SPACE_HREF_PREFIX } from "../config";
 
 export const RecentUpdatedSpaces = () => {
   const trpc = useTRPC();
@@ -21,7 +22,7 @@ export const RecentUpdatedSpaces = () => {
     <div className="mt-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="title">최근 요약된 스페이스</h2>
-        <Link href="/dashboard/spaces">
+        <Link href={SPACE_HREF_PREFIX.MY}>
           <Button variant="outline" size="sm">
             전체 보기 <ArrowRightIcon className="ml-2 w-4 h-4" />
           </Button>
@@ -33,7 +34,7 @@ export const RecentUpdatedSpaces = () => {
         <div className="text-center text-muted-foreground border border-dashed rounded-lg py-10">
           최근 요약된 스페이스가 없습니다.
           <div className="mt-4">
-            <Link href="/dashboard/spaces/new">
+            <Link href={SPACE_HREF_PREFIX.NEW}>
               <Button>
                 <PlusIcon /> 새 스페이스 만들기
               </Button>
@@ -41,7 +42,7 @@ export const RecentUpdatedSpaces = () => {
           </div>
         </div>
       ) : (
-        <SpacesGrid spaces={spaces} hrefPrefix="/dashboard/spaces" />
+        <SpacesGrid spaces={spaces} hrefPrefix={SPACE_HREF_PREFIX.MY} />
       )}
     </div>
   );
