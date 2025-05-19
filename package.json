@@ -15,7 +15,7 @@
     "db:seed:subscriptions": "bun run src/scripts/seed-subscription-plans.ts",
     "lambda:build": "bun run src/lambda/build.ts",
     "lambda:test": "vitest run src/lambda/tests/index.test.ts",
-    "lambda:deploy": "bun run lambda:test && bun run lambda:build && cd src/lambda/dist && zip -r ../../../lambda.zip . && cd ../../.. && aws lambda update-function-code --function-name Pentory --zip-file fileb://lambda.zip && rm lambda.zip"
+    "lambda:deploy": "bun run lambda:test && bun run lambda:build && cd src/lambda/dist && zip -r ../../../lambda.zip . && cd ../../.. && aws lambda update-function-code --function-name Pentory --zip-file fileb://lambda.zip && rm lambda.zip && exit 0"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.18",
