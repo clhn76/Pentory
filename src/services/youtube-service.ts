@@ -1,4 +1,5 @@
 import { Innertube, YTNodes } from "youtubei.js";
+import { TopContent } from "./types";
 
 class YoutubeService {
   private static instance: YoutubeService;
@@ -34,12 +35,44 @@ class YoutubeService {
   }
 
   public async searchVideos(keyword: string, limit: number = 10) {
-    const innertube = await Innertube.create();
+    const innertube = await Innertube.create({
+      location: "KR",
+    });
     const searchResults = await innertube.search(keyword, { type: "video" });
     const videos = searchResults.videos
       .filter((video) => video.is(YTNodes.Video))
       .slice(0, limit);
     return videos;
+  }
+
+  public async getTopYoutubeContents(keyword: string, limit: number = 10) {
+    const innertube = await Innertube.create();
+    const searchResults = await innertube.search(keyword, { type: "video" });
+    const videos = searchResults.videos
+      .filter(
+        (video) => video.is(YTNodes.Video) && video.duration.seconds > 180 // 3분이상
+      )
+      .slice(0, limit) as YTNodes.Video[];
+
+    const videoPromises = videos.map(async (video) => {
+      const topContent: TopContent = {
+        title: video.title.text || "",
+        description: video.description || "",
+        thumbnailImage: this.getThumbnailUrl(
+          this.getUrlFromVideoId(video.video_id)
+        ),
+        author: {
+          name: video.author.name || "",
+          profileImage: video.author.thumbnails[0].url || "",
+        },
+        publishDate: video.published?.toString() || "",
+        url: this.getUrlFromVideoId(video.video_id),
+      } as TopContent;
+
+      return topContent;
+    });
+
+    return Promise.all(videoPromises);
   }
 
   public async getLatestChannelVideoUrls(

@@ -4,6 +4,7 @@ import {
   generateText,
   JSONValue,
   streamText,
+  ToolSet,
 } from "ai";
 
 class AIService {
@@ -26,10 +27,12 @@ class AIService {
     system,
     prompt,
     customData,
+    tools,
   }: {
     system: string;
     prompt: string;
     customData?: JSONValue;
+    tools?: ToolSet;
   }) {
     for (let i = 0; i < this.apiKeys.length; i++) {
       const apiKey = this.apiKeys[i];
@@ -49,6 +52,7 @@ class AIService {
               model,
               system,
               prompt,
+              tools,
             });
 
             result.mergeIntoDataStream(dataStream);
@@ -89,6 +93,35 @@ class AIService {
           system,
           prompt,
         });
+      } catch (error) {
+        console.error(`❌ API Key ${i + 1} failed:`, error);
+        if (i === this.apiKeys.length - 1) {
+          throw new Error("❌ All API keys failed to process the request");
+        }
+      }
+    }
+  }
+
+  public async generateImagesWithRetry({ prompt }: { prompt: string }) {
+    for (let i = 0; i < this.apiKeys.length; i++) {
+      const apiKey = this.apiKeys[i];
+      try {
+        const genAI = createGoogleGenerativeAI({
+          apiKey,
+        });
+        const model = genAI.languageModel(
+          "gemini-2.0-flash-preview-image-generation"
+        );
+
+        const result = await generateText({
+          model,
+          providerOptions: {
+            google: { responseModalities: ["TEXT", "IMAGE"] },
+          },
+          prompt,
+        });
+
+        return result.files;
       } catch (error) {
         console.error(`❌ API Key ${i + 1} failed:`, error);
         if (i === this.apiKeys.length - 1) {

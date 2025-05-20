@@ -4,9 +4,11 @@ import {
   HomeIcon,
   LibraryIcon,
   LinkIcon,
-  // PenIcon,
+  PenIcon,
 } from "lucide-react";
 import { SPACE_HREF_PREFIX } from "../space/config";
+
+export const DASHBOARD_HEADER_HEIGHT = 54;
 
 export const DASHBOARD_GROUPS = [
   {
@@ -19,16 +21,16 @@ export const DASHBOARD_GROUPS = [
       },
     ],
   },
-  // {
-  //   groupLabel: "콘텐츠",
-  //   items: [
-  //     {
-  //       label: "콘텐츠 생성",
-  //       icon: PenIcon,
-  //       href: "/dashboard/contents/create",
-  //     },
-  //   ],
-  // },
+  {
+    groupLabel: "콘텐츠",
+    items: [
+      {
+        label: "콘텐츠 생성",
+        icon: PenIcon,
+        href: "/dashboard/contents/create",
+      },
+    ],
+  },
   {
     groupLabel: "개별 요약",
     items: [

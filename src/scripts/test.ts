@@ -1,9 +1,8 @@
-import { htmlParsingService } from "@/services/html-parsing-service";
+import { pexelsService } from "@/services/pexels-service";
 
 const test = async () => {
-  const keyword = "디자인 잘하는 법";
-  const result = await htmlParsingService.getTopNaverBlogContents(keyword);
-  console.dir(result, { depth: null });
+  const images = await pexelsService.searchPhoto("dog");
+  console.log(images);
 };
 
 test();

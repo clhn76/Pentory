@@ -59,7 +59,7 @@ const Banner = ({
 
 export const BannerSection = () => {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6 mb-8">
       <Banner
         title="URL 요약"
         description="유튜브, 블로그, 뉴스 등의 URL 주소만으로 콘텐츠의 핵심내용을 요약 정리해 드립니다."
@@ -77,6 +77,15 @@ export const BannerSection = () => {
         className="bg-gradient-to-r from-purple-900 to-pink-900/50"
         textColor="text-purple-100"
         textColorSecondary="text-purple-200/70"
+      />
+      <Banner
+        title="콘텐츠 생성"
+        description="원하는 키워드 하나만으로 블로그부터 유튜브 스크립트까지 콘텐츠를 자동으로 생성해 드립니다."
+        buttonText="콘텐츠 생성하기"
+        href="/dashboard/contents/create"
+        className="bg-gradient-to-r from-emerald-900 to-green-900/50"
+        textColor="text-emerald-100"
+        textColorSecondary="text-emerald-200/70"
       />
     </div>
   );
