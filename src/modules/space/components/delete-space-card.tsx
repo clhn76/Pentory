@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { SPACE_HREF_PREFIX } from "../config";
 
 interface DeleteSpaceCardProps {
   spaceId: string;
@@ -48,7 +49,7 @@ export const DeleteSpaceCard = ({
         queryClient.invalidateQueries({
           queryKey: trpc.spaceRouter.getSpaces.queryKey(),
         });
-        router.push("/dashboard/spaces");
+        router.push(SPACE_HREF_PREFIX.MY);
       },
       onError: (error) => {
         toast.error(error.message);
