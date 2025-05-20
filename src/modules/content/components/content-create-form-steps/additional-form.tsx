@@ -17,8 +17,8 @@ import { z } from "zod";
 
 const additionalFormSchema = z.object({
   additionalInfo: z.string().optional(),
-  aiImageGeneration: z.boolean().default(true),
-  customImages: z.array(z.string()).default([]),
+  useStockImage: z.boolean().default(true),
+  // customImages: z.array(z.string()).default([]),
 });
 
 export type AdditionalFormData = z.infer<typeof additionalFormSchema>;
@@ -32,8 +32,8 @@ export const AdditionalForm = ({
     resolver: zodResolver(additionalFormSchema),
     defaultValues: {
       additionalInfo: initialData?.additionalInfo || "",
-      aiImageGeneration: initialData?.aiImageGeneration || true,
-      customImages: initialData?.customImages || [],
+      useStockImage: initialData?.useStockImage || true,
+      // customImages: initialData?.customImages || [],
     },
   });
 
@@ -72,10 +72,10 @@ export const AdditionalForm = ({
         <div className="space-y-4">
           <FormField
             control={form.control}
-            name="aiImageGeneration"
+            name="useStockImage"
             render={({ field }) => (
               <FormItem className="form-item flex items-center gap-2 justify-between">
-                <FormLabel>AI 이미지 자동 생성</FormLabel>
+                <FormLabel>스톡 이미지 자동 삽입</FormLabel>
                 <FormControl>
                   <Switch
                     checked={field.value}
@@ -87,7 +87,7 @@ export const AdditionalForm = ({
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="customImages"
             render={() => (
@@ -99,7 +99,7 @@ export const AdditionalForm = ({
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
         </div>
 
         <div className="flex justify-between">

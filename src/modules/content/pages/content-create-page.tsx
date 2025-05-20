@@ -41,7 +41,10 @@ export const ContentCreatePage = () => {
           }}
         />
       ) : (
-        <ContentEditor contentFormData={contentFormData} />
+        <ContentEditor
+          contentFormData={contentFormData}
+          onBack={() => setContentFormData(null)}
+        />
       )}
     </div>
   );

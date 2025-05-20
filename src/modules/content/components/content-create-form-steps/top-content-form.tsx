@@ -95,9 +95,17 @@ export const TopContentForm = ({
         onSubmit={form.handleSubmit(handleSubmit)}
         className="space-y-6"
       >
-        <h2 className="text-2xl font-bold text-center">
-          참고할 콘텐츠를 선택해주세요 (최대 3개)
-        </h2>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-center">
+            참고할 콘텐츠를 선택해주세요 (최대 3개)
+          </h2>
+          <div className="flex justify-center items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">
+              검색 키워드
+            </span>
+            <Badge>{formData["keyword"].keyword}</Badge>
+          </div>
+        </div>
 
         <div className="space-y-2">
           <Tabs
@@ -111,8 +119,8 @@ export const TopContentForm = ({
               }}
               className={`sticky z-20 grid w-full grid-cols-2`}
             >
-              <TabsTrigger value="youtube">유튜브 TOP 10</TabsTrigger>
-              <TabsTrigger value="naver">네이버 블로그 TOP 10</TabsTrigger>
+              <TabsTrigger value="youtube">유튜브 TOP 15</TabsTrigger>
+              <TabsTrigger value="naver">네이버 블로그 TOP 15</TabsTrigger>
             </TabsList>
 
             <TabsContent value="naver" className="space-y-4">
