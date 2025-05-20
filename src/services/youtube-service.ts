@@ -46,19 +46,18 @@ class YoutubeService {
   }
 
   public async getTopYoutubeContents(keyword: string, limit: number = 10) {
-    const innertube = await Innertube.create({
-      location: "KR",
-    });
+    const innertube = await Innertube.create();
     const searchResults = await innertube.search(keyword, { type: "video" });
     const videos = searchResults.videos
-      .filter((video) => video.is(YTNodes.Video))
-      .slice(0, limit);
-    const videoPromises = videos.map(async (video) => {
-      const basicInfo = await innertube.getBasicInfo(video.video_id);
+      .filter(
+        (video) => video.is(YTNodes.Video) && video.duration.seconds > 180 // 3분이상
+      )
+      .slice(0, limit) as YTNodes.Video[];
 
+    const videoPromises = videos.map(async (video) => {
       const topContent: TopContent = {
-        title: basicInfo.basic_info.title || "",
-        description: basicInfo.basic_info.short_description || "",
+        title: video.title.text || "",
+        description: video.description || "",
         thumbnailImage: this.getThumbnailUrl(
           this.getUrlFromVideoId(video.video_id)
         ),
