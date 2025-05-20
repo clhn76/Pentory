@@ -1,22 +1,23 @@
-import { FormStepProps } from "@/modules/common/form-steps/types";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useSlideInAnimation } from "@/modules/common/gsap/hooks/use-slide-in-animation";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { FormStepProps } from "@/modules/common/form-steps/types";
+import { useSlideInAnimation } from "@/modules/common/gsap/hooks/use-slide-in-animation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const keywordSchema = z.object({
+const keywordFormSchema = z.object({
   keyword: z.string().min(1, "핵심 키워드를 입력해주세요"),
 });
+
+export type KeywordFormData = z.infer<typeof keywordFormSchema>;
 
 export const KeywordForm = ({
   onNext,
@@ -27,7 +28,7 @@ export const KeywordForm = ({
   const form = useForm<{
     keyword: string;
   }>({
-    resolver: zodResolver(keywordSchema),
+    resolver: zodResolver(keywordFormSchema),
     defaultValues: {
       keyword: initialData?.keyword || "",
     },
@@ -47,17 +48,23 @@ export const KeywordForm = ({
         onSubmit={form.handleSubmit(onNext)}
         className="space-y-6"
       >
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-center">
+            어떤 콘텐츠를 만들고 싶으신가요?
+          </h2>
+          <p className="text-sm text-muted-foreground text-center">
+            블로그, 소셜 미디어 게시물, 유튜브 스크립트등 다양한 콘텐츠를 만들
+            수 있습니다.
+          </p>
+        </div>
+
         <FormField
           control={form.control}
           name="keyword"
           render={({ field }) => (
             <FormItem className="form-item">
-              <FormLabel>핵심 키워드</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="작성할 콘텐츠의 핵심 키워드를 입력해주세요"
-                />
+                <Input {...field} placeholder="핵심 키워드" />
               </FormControl>
               <FormMessage />
             </FormItem>
