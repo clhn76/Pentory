@@ -1,15 +1,5 @@
 import * as cheerio from "cheerio";
-
-export interface TopContent {
-  title: string;
-  description: string;
-  thumbnailImage: string;
-  author: {
-    name: string;
-    profileImage: string;
-  };
-  publishDate: string;
-}
+import { TopContent } from "./types";
 
 class HtmlParsingService {
   private static instance: HtmlParsingService;
@@ -99,7 +89,7 @@ class HtmlParsingService {
     return newLinks;
   }
 
-  public async getTopNaverBlogContents(keyword: string) {
+  public async getTopNaverBlogContents(keyword: string, limit: number = 10) {
     const res = await this.fetcher(
       `https://search.naver.com/search.naver?ssc=tab.blog.all&sm=tab_jum&query=${encodeURIComponent(
         keyword
@@ -111,6 +101,11 @@ class HtmlParsingService {
 
     // 블로그 검색 결과 리스트 아이템들을 선택
     $(".lst_view > li.bx").each((index, element) => {
+      // 10개까지만 결과를 수집
+      if (blogs.length >= limit) {
+        return false;
+      }
+
       const $item = $(element);
 
       // 함께 볼만한 검색어 섹션은 제외
@@ -132,12 +127,14 @@ class HtmlParsingService {
       const $userInfo = $item.find(".user_box_inner");
       const author = {
         name: $userInfo.find(".name").text().trim(),
-        profileImage:
-          $userInfo.find(".user_thumb .thumb_link img").attr("src") || "",
+        profileImage: $userInfo.find(".user_box_inner img").attr("src") || "",
       };
 
       // 작성일자
       const publishDate = $userInfo.find(".sub").text().trim();
+
+      // 링크
+      const url = $item.find(".title_link").attr("href") || "";
 
       blogs.push({
         title,
@@ -145,14 +142,10 @@ class HtmlParsingService {
         thumbnailImage,
         author,
         publishDate,
+        url,
       });
     });
-
-    return {
-      query: keyword,
-      totalResults: blogs.length,
-      topContents: blogs,
-    };
+    return blogs;
   }
 
   private async fetcher(url: string) {

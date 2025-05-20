@@ -1,45 +1,57 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useRef, useState } from "react";
 import { FormStepProps } from "../types";
+import { ClassValue } from "clsx";
+import { cn } from "@/lib/utils";
 
-export type FormStepsProps<T extends Record<string, unknown>> = {
+export type FormStepsProps<T extends Record<string, any>> = {
   steps: {
     id: string;
     component: React.ComponentType<FormStepProps<T[keyof T]>>;
   }[];
   onComplete: (data: T) => void;
   initialData?: Partial<T>;
+  className?: ClassValue;
 };
 
-export const FormSteps = <T extends Record<string, unknown>>({
+export const FormSteps = <T extends Record<string, any>>({
   steps,
   onComplete,
   initialData = {},
+  className,
 }: FormStepsProps<T>) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<T>(initialData as T);
   const stepRef = useRef<HTMLDivElement>(null);
 
   const handleNext = (stepData: T[keyof T]) => {
-    setFormData((prev) => ({
-      ...prev,
+    const updatedData = {
+      ...formData,
       [steps[currentStep].id]: stepData,
-    }));
+    };
 
     if (currentStep === steps.length - 1) {
-      onComplete(formData);
+      onComplete(updatedData);
     } else {
+      setFormData(updatedData);
       setCurrentStep((prev) => prev + 1);
     }
   };
 
   const handleBack = () => {
+    // 이전 스텝으로 돌아가기 전에 현재 스텝의 데이터를 초기화
+    setFormData((prev) => ({
+      ...prev,
+      [steps[currentStep].id]: {},
+    }));
     setCurrentStep((prev) => prev - 1);
   };
 
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8">
+    <div className={cn("w-full mx-auto space-y-8 max-w-2xl", className)}>
       <div className="flex items-center justify-between">
         {steps.map((step, index) => (
           <div
