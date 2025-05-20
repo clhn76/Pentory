@@ -31,7 +31,7 @@ export const TopContentForm = ({
 }>) => {
   const trpc = useTRPC();
   const keyword = formData["keyword"].keyword;
-  const [activeTab, setActiveTab] = useState("youtube");
+  const [activeTab, setActiveTab] = useState("naver");
 
   const formRef = useSlideInAnimation<HTMLFormElement>(".form-item", {
     duration: 0.5,
@@ -44,7 +44,7 @@ export const TopContentForm = ({
     ...trpc.contentRouter.searchNaverTopContents.queryOptions({
       keyword,
     }),
-    enabled: !!keyword && activeTab === "naver",
+    enabled: !!keyword,
     staleTime: Infinity,
   });
 
@@ -52,7 +52,7 @@ export const TopContentForm = ({
     ...trpc.contentRouter.searchYoutubeTopContents.queryOptions({
       keyword,
     }),
-    enabled: !!keyword && activeTab === "youtube",
+    enabled: !!keyword && !!naverTopContents,
     staleTime: Infinity,
   });
 
@@ -119,8 +119,8 @@ export const TopContentForm = ({
               }}
               className={`sticky z-20 grid w-full grid-cols-2`}
             >
-              <TabsTrigger value="youtube">유튜브 TOP 15</TabsTrigger>
               <TabsTrigger value="naver">네이버 블로그 TOP 15</TabsTrigger>
+              <TabsTrigger value="youtube">유튜브 TOP 15</TabsTrigger>
             </TabsList>
 
             <TabsContent value="naver" className="space-y-4">
