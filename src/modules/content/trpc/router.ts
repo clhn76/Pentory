@@ -15,7 +15,10 @@ export const contentRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const { keyword } = input;
-      const result = await htmlParsingService.getTopNaverBlogContents(keyword);
+      const result = await htmlParsingService.getTopNaverBlogContents(
+        keyword,
+        15
+      );
       return result;
     }),
 
@@ -23,7 +26,7 @@ export const contentRouter = createTRPCRouter({
     .input(z.object({ keyword: z.string() }))
     .query(async ({ input }) => {
       const { keyword } = input;
-      const result = await youtubeService.getTopYoutubeContents(keyword);
+      const result = await youtubeService.getTopYoutubeContents(keyword, 15);
       return result;
     }),
 
