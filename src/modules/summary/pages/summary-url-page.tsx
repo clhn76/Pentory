@@ -11,6 +11,7 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SummaryHistory } from "../components/summary-history";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const SummaryUrlPage = () => {
   const trpc = useTRPC();
@@ -28,12 +29,19 @@ export const SummaryUrlPage = () => {
     })
   );
 
-  const { complete, completion, isLoading, data } = useCompletion({
+  const { complete, completion, isLoading, data, error } = useCompletion({
     api: "/api/summary",
     onFinish: async () => {
       setIsFinished(true);
     },
   });
+
+  useEffect(() => {
+    if (error) {
+      const errorMessage = JSON.parse(error.message);
+      toast.error(errorMessage.error);
+    }
+  }, [error]);
 
   const handleSubmit = async (values: SummaryUrlFormValues) => {
     await complete(values.url);

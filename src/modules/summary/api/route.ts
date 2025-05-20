@@ -157,8 +157,25 @@ export const POST = async (req: NextRequest) => {
     });
   } catch (error) {
     console.error("Error processing URL:", error);
+
+    // YouTube 자막 관련 에러 처리
+    if (
+      error instanceof Error &&
+      error.message.includes("Transcript panel not found")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "해당 영상에 자막이 없습니다. 자막이 있는 영상으로 다시 시도해주세요.",
+        },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "요약 처리중 오류가 발생했습니다." },
+      {
+        error: "요약 처리중 오류가 발생했습니다.",
+      },
       { status: 500 }
     );
   }

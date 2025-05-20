@@ -104,6 +104,13 @@ class YoutubeService {
   }
 
   private getVideoIdFromUrl(url: string): string {
+    // youtu.be 형식의 URL 처리
+    if (url.includes("youtu.be")) {
+      const videoId = url.split("youtu.be/")[1]?.split("?")[0];
+      return videoId || "";
+    }
+
+    // youtube.com 형식의 URL 처리
     const vParam = url.split("v=")[1];
     if (!vParam) return "";
     const videoId = vParam.split(/[&#]/)[0];
