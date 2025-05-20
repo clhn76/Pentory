@@ -128,6 +128,11 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
           queryKey: trpc.spaceRouter.getSpaces.queryKey(),
         });
         queryClient.invalidateQueries({
+          queryKey: trpc.spaceRouter.getSummariesBySpaceId.queryKey({
+            spaceId: space?.id,
+          }),
+        });
+        queryClient.invalidateQueries({
           queryKey: trpc.spaceRouter.getSpaceSettingsById.queryKey({
             spaceId: space?.id,
           }),
