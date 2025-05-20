@@ -32,6 +32,7 @@ import { SpaceSourceItem } from "./space-source-item";
 import { FREE_PLAN } from "@/modules/payment/config";
 import { Switch } from "@/components/ui/switch";
 import { useGetUserInfo } from "@/modules/user/hooks/use-get-user-info.hook";
+import { SPACE_HREF_PREFIX } from "../../config";
 
 const spaceFormSchema = z.object({
   name: z
@@ -105,7 +106,7 @@ export const SpaceForm = ({ space }: SpaceFormProps) => {
     trpc.spaceRouter.createSpace.mutationOptions({
       onSuccess: (data) => {
         toast.success("스페이스 생성 완료");
-        router.push(`/dashboard/spaces/${data.id}`);
+        router.push(`${SPACE_HREF_PREFIX.MY}/${data.id}`);
         queryClient.invalidateQueries({
           queryKey: trpc.spaceRouter.getSpaces.queryKey(),
         });
