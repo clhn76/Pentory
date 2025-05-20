@@ -22,6 +22,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   }),
   providers: [Google],
   pages: {
-    signIn: "/",
+    signIn: "/sign-in",
   },
 });
