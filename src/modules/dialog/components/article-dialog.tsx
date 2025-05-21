@@ -2,6 +2,7 @@
 
 import { Markdown } from "@/components/common/markdown";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -21,10 +22,8 @@ import { ko } from "date-fns/locale";
 import { Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect } from "react";
-import { useArticleDialogStore } from "../stores/use-article-dialog-store";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { AdsenseDisplayAd } from "@/modules/common/adsense/components/adsense-display-ad";
+import { useArticleDialogStore } from "../stores/use-article-dialog-store";
 
 export const ArticleDialog = () => {
   const isMobile = useIsMobile();
@@ -112,11 +111,11 @@ export const ArticleDialog = () => {
             )}
           </div>
         </div>
-        <AdsenseDisplayAd className="h-[90px]" />
+        {/* <AdsenseDisplayAd className="h-[90px]" /> */}
 
         <Markdown>{articleData?.content}</Markdown>
 
-        <AdsenseDisplayAd className="h-[90px]" />
+        {/* <AdsenseDisplayAd className="h-[90px]" /> */}
       </div>
     ),
     [articleData, handleCopyContent]

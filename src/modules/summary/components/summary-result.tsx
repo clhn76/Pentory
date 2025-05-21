@@ -8,7 +8,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ContentData } from "../types";
-import { AdsenseDisplayAd } from "@/modules/common/adsense/components/adsense-display-ad";
 
 interface SummaryResultProps {
   summary: string;
@@ -81,7 +80,7 @@ export const SummaryResult = ({
 
               <TabsContent value="summary" className="mt-4">
                 <div className="relative">
-                  <AdsenseDisplayAd className="mb-2" />
+                  {/* <AdsenseDisplayAd className="mb-2" /> */}
 
                   <div className="flex justify-end gap-2 mb-6">
                     {contentData?.url && (
@@ -110,7 +109,7 @@ export const SummaryResult = ({
                     </Button>
                   </div>
                   <Markdown>{summary}</Markdown>
-                  <AdsenseDisplayAd />
+                  {/* <AdsenseDisplayAd /> */}
                 </div>
               </TabsContent>
 

@@ -1,6 +1,5 @@
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
-import { AdsenseProvider } from "@/modules/common/adsense/layouts/adsense-provider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -56,9 +55,7 @@ export default function RootLayout({
         className={cn(pretendard.className, "antialiased")}
         suppressHydrationWarning
       >
-        <AdsenseProvider>
-          <Providers>{children}</Providers>
-        </AdsenseProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

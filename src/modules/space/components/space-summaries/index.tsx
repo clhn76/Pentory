@@ -6,9 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/trpc/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { SummaryItem } from "./summary-item";
 import { SpaceInfo } from "./space-info";
-import { AdsenseDisplayAd } from "@/modules/common/adsense/components/adsense-display-ad";
+import { SummaryItem } from "./summary-item";
 
 interface SpaceSummariesProps {
   spaceId: string;
@@ -83,7 +82,7 @@ export const SpaceSummaries = ({
         isPersonal={isPersonal}
       />
 
-      <AdsenseDisplayAd className="mt-6 h-[90px]" />
+      {/* <AdsenseDisplayAd className="mt-6 h-[90px]" /> */}
 
       {allSummaries.length === 0 ? (
         <div className="mt-8 flex flex-col items-center justify-center gap-1">
