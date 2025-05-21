@@ -15,6 +15,7 @@ class YoutubeService {
 
   public async getContentDataFromUrl(url: string) {
     const videoId = this.getVideoIdFromUrl(url);
+    console.log(videoId);
     const innertube = await Innertube.create();
     const video = await innertube.getInfo(videoId);
     const transcript = await video.getTranscript();
@@ -88,7 +89,7 @@ class YoutubeService {
 
   public checkIsYoutubeUrl(url: string) {
     const youtubePattern =
-      /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+      /^(https?:\/\/)?(www\.|m\.)?(youtube\.com|youtu\.be)\/.+/;
     const isYoutubeUrl = youtubePattern.test(url.toString());
     return isYoutubeUrl;
   }
