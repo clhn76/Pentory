@@ -31,8 +31,6 @@ export const getAiSources = protectedProcedure
       // useSearchGrounding: true,
     });
 
-    console.log(aiSources);
-
     if (!aiSources) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",

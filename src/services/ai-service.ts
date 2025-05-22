@@ -50,7 +50,7 @@ class AIService {
     customData,
     tools,
   }: {
-    modelId: string;
+    modelId?: string;
     system: string;
     prompt: string;
     customData?: JSONValue;
@@ -90,7 +90,7 @@ class AIService {
     system,
     prompt,
   }: {
-    modelId: string;
+    modelId?: string;
     system: string;
     prompt: string;
   }) {
