@@ -1,3 +1,4 @@
+import { youtubeService } from "@/services/youtube-service";
 import { protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import axios, { AxiosError } from "axios";
@@ -30,7 +31,8 @@ export const validateSourceUrl = protectedProcedure
         });
       }
 
-      if (url.includes("youtube.com")) {
+      const isYoutubeUrl = youtubeService.checkIsYoutubeUrl(url);
+      if (isYoutubeUrl) {
         return await handleYoutubeUrl(url);
       } else {
         return await handleRssUrl(url);
