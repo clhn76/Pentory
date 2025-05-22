@@ -27,7 +27,7 @@ export const getAiSources = protectedProcedure
       system: systemPrompt,
       prompt: query,
       schema: aiSourcesSchema,
-      temperature: 0.1,
+      temperature: 0.6,
     });
 
     console.log(aiSources);

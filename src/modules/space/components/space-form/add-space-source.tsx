@@ -24,6 +24,8 @@ export const AddSpaceSource = ({
   const getAiSources = useMutation(
     trpc.spaceRouter.getAiSources.mutationOptions({
       onSuccess: (data) => {
+        toast(`AI가 ${data.length}개의 소스를 찾았습니다.`);
+
         for (const aiSource of data) {
           // 최대 소스 개수 검증
           if (sources.length >= maxSourceCount) {
