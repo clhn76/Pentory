@@ -149,12 +149,7 @@ class HtmlParsingService {
     return blogs;
   }
 
-  public async validateYoutubeChannelUrl(url: string): Promise<{
-    isValid: boolean;
-    channelId?: string;
-    channelName?: string;
-    error?: string;
-  }> {
+  public async validateYoutubeChannelUrl(url: string) {
     try {
       // YouTube 채널 URL 패턴 검사
       const isYoutubeUrl = youtubeService.checkIsYoutubeUrl(url);
@@ -199,11 +194,7 @@ class HtmlParsingService {
     }
   }
 
-  public async validateRssUrl(url: string): Promise<{
-    isValid: boolean;
-    feedTitle?: string;
-    error?: string;
-  }> {
+  public async validateRssUrl(url: string) {
     try {
       const response = await this.fetcher(url);
       const xmlData = await response.text();

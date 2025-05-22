@@ -11,7 +11,7 @@ export const GET_AI_SOURCES_SYSTEM_PROMPT = `
   Your mission is to find high-quality, actively updated sources using web search capabilities and deliver them in the exact specified format.
   
   REQUIREMENTS:
-  - Find approximately 15 diverse and valuable sources from around the globe
+  - Find approximately 10 diverse and valuable sources from around the globe
   - Focus ONLY on sources directly related to the user's provided keywords
   - Exclude any irrelevant or off-topic sources
   - For YouTube channels: exclude those with insufficient content or poor relevance to keywords
