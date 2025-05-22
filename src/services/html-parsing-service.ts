@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { TopContent } from "./types";
+import { youtubeService } from "./youtube-service";
 
 class HtmlParsingService {
   private static instance: HtmlParsingService;
@@ -146,6 +147,126 @@ class HtmlParsingService {
       });
     });
     return blogs;
+  }
+
+  public async validateYoutubeChannelUrl(url: string): Promise<{
+    isValid: boolean;
+    channelId?: string;
+    channelName?: string;
+    error?: string;
+  }> {
+    try {
+      // YouTube 채널 URL 패턴 검사
+      const isYoutubeUrl = youtubeService.checkIsYoutubeUrl(url);
+      if (!isYoutubeUrl) {
+        return {
+          isValid: false,
+          error: "유효한 YouTube 채널 URL이 아닙니다.",
+        };
+      }
+
+      const response = await this.fetcher(url);
+      const htmlContent = await response.text();
+
+      // 채널 ID 추출
+      const channelId = htmlContent.match(/"externalId":"([^"]+)"/)?.[1];
+      // 채널 이름 추출
+      let channelName = htmlContent.match(
+        /<title>(.*?)(?:\s*-\s*YouTube)?<\/title>/
+      )?.[1];
+      if (channelName) {
+        channelName = this.decodeHtmlEntities(channelName);
+      }
+
+      if (!channelId || !channelName) {
+        return {
+          isValid: false,
+          error: "YouTube 채널 정보를 가져올 수 없습니다.",
+        };
+      }
+
+      return {
+        isValid: true,
+        channelId,
+        channelName: channelName || "",
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        isValid: false,
+        error: "YouTube 채널 URL 검증 중 오류가 발생했습니다.",
+      };
+    }
+  }
+
+  public async validateRssUrl(url: string): Promise<{
+    isValid: boolean;
+    feedTitle?: string;
+    error?: string;
+  }> {
+    try {
+      const response = await this.fetcher(url);
+      const xmlData = await response.text();
+
+      // RSS 형식 검증
+      const isRss =
+        typeof xmlData === "string" &&
+        (xmlData.includes("<rss") ||
+          xmlData.includes("<feed") ||
+          xmlData.includes("<channel>") ||
+          (xmlData.includes("<?xml") &&
+            (xmlData.includes("<rss") || xmlData.includes("<feed"))));
+
+      if (!isRss) {
+        return {
+          isValid: false,
+          error: "유효한 RSS 피드가 아닙니다.",
+        };
+      }
+
+      // 피드 제목 추출
+      let title = xmlData.match(/<title(?:\s+[^>]*)?>(.*?)<\/title>/)?.[1];
+      // CDATA 처리
+      if (title && title.includes("<![CDATA[")) {
+        title = title.replace(/<!\[CDATA\[(.*?)\]\]>/g, "$1");
+      }
+      // HTML 엔티티 디코딩
+      if (title) {
+        title = this.decodeHtmlEntities(title);
+      }
+
+      if (!title) {
+        return {
+          isValid: false,
+          error: "RSS 피드 제목을 찾을 수 없습니다.",
+        };
+      }
+
+      return {
+        isValid: true,
+        feedTitle: title || "",
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        isValid: false,
+        error: "RSS URL 검증 중 오류가 발생했습니다.",
+      };
+    }
+  }
+
+  private decodeHtmlEntities(text: string): string {
+    const entities: { [key: string]: string } = {
+      "&amp;": "&",
+      "&lt;": "<",
+      "&gt;": ">",
+      "&quot;": '"',
+      "&#39;": "'",
+      "&#x2F;": "/",
+      "&#x60;": "`",
+      "&#x3D;": "=",
+    };
+    return text.replace(/&[^;]+;/g, (entity) => entities[entity] || entity);
   }
 
   private async fetcher(url: string) {

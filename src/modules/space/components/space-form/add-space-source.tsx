@@ -5,6 +5,7 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AddSpaceSourceProps {
   sources: SpaceFormValues["sources"];
@@ -19,11 +20,31 @@ export const AddSpaceSource = ({
 }: AddSpaceSourceProps) => {
   const trpc = useTRPC();
 
-  // Mutation
-  const { mutateAsync: validateSourceUrl, isPending } = useMutation(
+  // Mutations
+  const getAiSources = useMutation(
+    trpc.spaceRouter.getAiSources.mutationOptions({
+      onSuccess: (data) => {
+        for (const aiSource of data) {
+          // 최대 소스 개수 검증
+          if (sources.length >= maxSourceCount) {
+            toast.error("현재 플랜의 최대 소스 개수에 도달했습니다.");
+            break;
+          }
+
+          // 중복 소스 검증
+          if (sources.some((source) => source.url === aiSource.url)) {
+            continue;
+          }
+
+          onAddSource(aiSource as SpaceFormValues["sources"][number]);
+        }
+      },
+    })
+  );
+  const validateSourceUrl = useMutation(
     trpc.spaceRouter.validateSourceUrl.mutationOptions({
       onSuccess: (data) => {
-        onAddSource(data);
+        onAddSource(data as SpaceFormValues["sources"][number]);
         setSourceUrl("");
       },
       onError: (error) => {
@@ -47,6 +68,7 @@ export const AddSpaceSource = ({
 
   // State
   const [sourceUrl, setSourceUrl] = useState("");
+  const [aiPrompt, setAiPrompt] = useState("");
 
   const handleAddSource = useCallback(async () => {
     // 최대 소스 개수 검증
@@ -76,7 +98,7 @@ export const AddSpaceSource = ({
     }
 
     // URL 형식 검증
-    await validateSourceUrl({
+    validateSourceUrl.mutate({
       url: sourceUrl,
     });
   }, [maxSourceCount, sourceUrl, sources, validateSourceUrl]);
@@ -91,32 +113,77 @@ export const AddSpaceSource = ({
     [handleAddSource]
   );
 
+  const handleAiAdd = useCallback(async () => {
+    if (!aiPrompt) {
+      toast.error("관심사를 입력해주세요.");
+      return;
+    }
+
+    getAiSources.mutate({
+      query: aiPrompt,
+    });
+  }, [aiPrompt, getAiSources]);
+
   return (
     <div className="space-y-4">
       <h3 className="text-xl font-semibold tracking-tight">요약 소스 추가</h3>
 
-      <div>
-        <p className="text-sm font-medium">
-          유튜브 채널 또는 블로그 RSS 주소를 입력해주세요.
-        </p>
-        <div className="mt-3 flex items-center gap-2">
-          <Input
-            placeholder="소스 URL"
-            value={sourceUrl}
-            onChange={(e) => setSourceUrl(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
+      <Tabs defaultValue="ai" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="ai">AI 자동 추가</TabsTrigger>
+          <TabsTrigger value="manual">직접 추가</TabsTrigger>
+        </TabsList>
 
-          <Button
-            variant="outline"
-            type="button"
-            onClick={handleAddSource}
-            isLoading={isPending}
-          >
-            소스 추가
-          </Button>
-        </div>
-      </div>
+        <TabsContent value="ai">
+          <div>
+            <p className="text-sm font-medium">
+              관심사를 입력하면 AI가 관련된 소스를 자동으로 찾아드립니다.
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <Input
+                placeholder="관심사 입력 (예: AI, 웹 프로그래밍, UX UI 디자인, 마케팅 등)"
+                value={aiPrompt}
+                disabled={getAiSources.isPending}
+                onChange={(e) => setAiPrompt(e.target.value)}
+              />
+
+              <Button
+                variant="outline"
+                type="button"
+                onClick={handleAiAdd}
+                isLoading={getAiSources.isPending}
+              >
+                AI로 찾기
+              </Button>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="manual">
+          <div>
+            <p className="text-sm font-medium">
+              유튜브 채널 또는 블로그 RSS 주소를 입력해주세요.
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <Input
+                placeholder="소스 URL"
+                value={sourceUrl}
+                onChange={(e) => setSourceUrl(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+
+              <Button
+                variant="outline"
+                type="button"
+                onClick={handleAddSource}
+                isLoading={validateSourceUrl.isPending}
+              >
+                소스 추가
+              </Button>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

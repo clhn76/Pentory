@@ -101,9 +101,18 @@ export const SpaceSourceItem = ({
           {type === "YOUTUBE_CHANNEL" ? "Youtube Channel" : "RSS Feed"}
         </Badge>
       </div>
-      <p className="text-muted-foreground text-sm line-clamp-2 break-all overflow-hidden text-ellipsis">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-muted-foreground text-sm line-clamp-2 break-all overflow-hidden text-ellipsis"
+        tabIndex={0}
+        aria-label={`${name}의 ${
+          type === "YOUTUBE_CHANNEL" ? "유튜브 채널" : "RSS 피드"
+        } 링크 열기`}
+      >
         {url}
-      </p>
+      </a>
     </div>
   );
 };

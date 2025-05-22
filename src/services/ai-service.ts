@@ -1,11 +1,13 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import {
   createDataStreamResponse,
+  generateObject,
   generateText,
   JSONValue,
   streamText,
   ToolSet,
 } from "ai";
+import { z } from "zod";
 
 class AIService {
   private static instance: AIService;
@@ -23,6 +25,23 @@ class AIService {
     return AIService.instance;
   }
 
+  private async retryWithApiKeys<T>(
+    operation: (apiKey: string) => Promise<T> | T
+  ): Promise<T> {
+    for (let i = 0; i < this.apiKeys.length; i++) {
+      const apiKey = this.apiKeys[i];
+      try {
+        return await operation(apiKey);
+      } catch (error) {
+        console.error(`❌ API Key ${i + 1} failed:`, error);
+        if (i === this.apiKeys.length - 1) {
+          throw new Error("❌ All API keys failed to process the request");
+        }
+      }
+    }
+    throw new Error("❌ Unexpected error in retryWithApiKeys");
+  }
+
   public streamTextWithRetry({
     system,
     prompt,
@@ -34,43 +53,33 @@ class AIService {
     customData?: JSONValue;
     tools?: ToolSet;
   }) {
-    for (let i = 0; i < this.apiKeys.length; i++) {
-      const apiKey = this.apiKeys[i];
-      try {
-        const genAI = createGoogleGenerativeAI({
-          apiKey,
-        });
-        const model = genAI.languageModel("gemini-2.0-flash");
+    return this.retryWithApiKeys((apiKey) => {
+      const genAI = createGoogleGenerativeAI({
+        apiKey,
+      });
+      const model = genAI.languageModel("gemini-2.0-flash");
 
-        return createDataStreamResponse({
-          execute: (dataStream) => {
-            if (customData) {
-              dataStream.writeData(customData);
-            }
+      return createDataStreamResponse({
+        execute: (dataStream) => {
+          if (customData) {
+            dataStream.writeData(customData);
+          }
 
-            const result = streamText({
-              model,
-              system,
-              prompt,
-              tools,
-            });
+          const result = streamText({
+            model,
+            system,
+            prompt,
+            tools,
+          });
 
-            result.mergeIntoDataStream(dataStream);
-          },
-          onError: (error) => {
-            console.error("❌ Stream error:", error);
-            // Error messages are masked by default for security reasons.
-            // If you want to expose the error message to the client, you can do so here:
-            return error instanceof Error ? error.message : String(error);
-          },
-        });
-      } catch (error) {
-        console.error(`❌ API Key ${i + 1} failed:`, error);
-        if (i === this.apiKeys.length - 1) {
-          throw new Error("❌ All API keys failed to process the request");
-        }
-      }
-    }
+          result.mergeIntoDataStream(dataStream);
+        },
+        onError: (error) => {
+          console.error("❌ Stream error:", error);
+          return error instanceof Error ? error.message : String(error);
+        },
+      });
+    });
   }
 
   public async generateTextWithRetry({
@@ -80,55 +89,70 @@ class AIService {
     system: string;
     prompt: string;
   }) {
-    for (let i = 0; i < this.apiKeys.length; i++) {
-      const apiKey = this.apiKeys[i];
-      try {
-        const genAI = createGoogleGenerativeAI({
-          apiKey,
-        });
-        const model = genAI.languageModel("gemini-2.0-flash");
+    return this.retryWithApiKeys(async (apiKey) => {
+      const genAI = createGoogleGenerativeAI({
+        apiKey,
+      });
+      const model = genAI.languageModel("gemini-2.0-flash");
 
-        return await generateText({
-          model,
-          system,
-          prompt,
-        });
-      } catch (error) {
-        console.error(`❌ API Key ${i + 1} failed:`, error);
-        if (i === this.apiKeys.length - 1) {
-          throw new Error("❌ All API keys failed to process the request");
-        }
-      }
-    }
+      return await generateText({
+        model,
+        system,
+        prompt,
+      });
+    });
   }
 
   public async generateImagesWithRetry({ prompt }: { prompt: string }) {
-    for (let i = 0; i < this.apiKeys.length; i++) {
-      const apiKey = this.apiKeys[i];
-      try {
-        const genAI = createGoogleGenerativeAI({
-          apiKey,
-        });
-        const model = genAI.languageModel(
-          "gemini-2.0-flash-preview-image-generation"
-        );
+    return this.retryWithApiKeys(async (apiKey) => {
+      const genAI = createGoogleGenerativeAI({
+        apiKey,
+      });
+      const model = genAI.languageModel(
+        "gemini-2.0-flash-preview-image-generation"
+      );
 
-        const result = await generateText({
-          model,
-          providerOptions: {
-            google: { responseModalities: ["TEXT", "IMAGE"] },
-          },
-          prompt,
-        });
+      const result = await generateText({
+        model,
+        providerOptions: {
+          google: { responseModalities: ["TEXT", "IMAGE"] },
+        },
+        prompt,
+      });
 
-        return result.files;
-      } catch (error) {
-        console.error(`❌ API Key ${i + 1} failed:`, error);
-        if (i === this.apiKeys.length - 1) {
-          throw new Error("❌ All API keys failed to process the request");
-        }
-      }
-    }
+      return result.files;
+    });
+  }
+
+  public async generateObjectWithRetry({
+    system,
+    prompt,
+    schema,
+    temperature,
+  }: {
+    system: string;
+    prompt: string;
+    schema: z.ZodSchema;
+    temperature?: number;
+  }) {
+    return this.retryWithApiKeys(async (apiKey) => {
+      const genAI = createGoogleGenerativeAI({
+        apiKey,
+      });
+      const model = genAI.languageModel("gemini-2.0-flash", {
+        useSearchGrounding: true, // 검색 기능 사용
+      });
+
+      const result = await generateObject({
+        model,
+        system,
+        prompt,
+        schema,
+        temperature,
+      });
+
+      return result.object;
+    });
   }
 
   private getShuffledApiKeys() {

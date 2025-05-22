@@ -14,6 +14,7 @@ import { unsubscribe } from "./unsubscribe";
 import { getSpaceSources } from "./get-space-sources";
 import { getSubscribedSpaces } from "./get-subscribed-spaces";
 import { deleteSpace } from "./delete-space";
+import { getAiSources } from "./get-ai-sources";
 
 export const spaceRouter = createTRPCRouter({
   getSpaces: getSpaces,
@@ -31,4 +32,5 @@ export const spaceRouter = createTRPCRouter({
   getSpaceSources: getSpaceSources,
   getSubscribedSpaces: getSubscribedSpaces,
   deleteSpace: deleteSpace,
+  getAiSources: getAiSources,
 });
