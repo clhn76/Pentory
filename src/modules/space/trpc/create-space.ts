@@ -71,23 +71,23 @@ export const createSpace = protectedProcedure
       });
     }
 
+    // 스페이스 생성
+    const [newSpace] = await db
+      .insert(spaceTable)
+      .values({
+        userId: user.id,
+        name,
+        description,
+        summaryStyle,
+        customPrompt,
+        isPublic,
+      })
+      .returning({
+        id: spaceTable.id,
+      });
+
     // 트랜잭션 시작
     return await db.transaction(async (tx) => {
-      // 스페이스 생성
-      const [newSpace] = await tx
-        .insert(spaceTable)
-        .values({
-          userId: user.id,
-          name,
-          description,
-          summaryStyle,
-          customPrompt,
-          isPublic,
-        })
-        .returning({
-          id: spaceTable.id,
-        });
-
       // 스페이스 소스 생성
       if (sources.length > 0) {
         // 신규 스페이스이므로 모든 소스가 신규 소스임

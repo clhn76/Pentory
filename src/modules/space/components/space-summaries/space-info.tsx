@@ -1,47 +1,51 @@
 import { LockIcon, GlobeIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
 interface SpaceInfoProps {
-  name: string;
-  description?: string | null;
-  isPublic: boolean;
-  summaryCount: number;
-  sourceCount: number;
-  user?: {
-    name: string | null;
-    image: string | null;
-  } | null;
   isPersonal?: boolean;
 }
 
-export const SpaceInfo = ({
-  name,
-  description,
-  isPublic,
-  summaryCount,
-  sourceCount,
-  user,
-  isPersonal = false,
-}: SpaceInfoProps) => {
+export const SpaceInfo = ({ isPersonal = false }: SpaceInfoProps) => {
+  const params = useParams<{ spaceId: string }>();
+  const trpc = useTRPC();
+
+  const spaceInfo = useQuery(
+    trpc.spaceRouter.getSpaceInfoById.queryOptions(
+      {
+        spaceId: params.spaceId,
+      },
+      {
+        enabled: !!params.spaceId,
+      }
+    )
+  );
+
   return (
     <div className="space-y-4 px-2">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold truncate">{name}</h1>
+          <h1 className="text-2xl font-bold truncate">
+            {spaceInfo.data?.name}
+          </h1>
         </div>
-        {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+        {spaceInfo.data?.description && (
+          <p className="text-sm text-muted-foreground">
+            {spaceInfo.data?.description}
+          </p>
         )}
       </div>
 
       <div className="flex gap-4 text-sm text-muted-foreground">
         {isPersonal ? (
           <Badge
-            variant={isPublic ? "default" : "secondary"}
+            variant={spaceInfo.data?.isPublic ? "default" : "secondary"}
             className="flex items-center gap-1"
           >
-            {isPublic ? (
+            {spaceInfo.data?.isPublic ? (
               <>
                 <GlobeIcon className="w-3 h-3" />
                 <span>공개</span>
@@ -54,21 +58,21 @@ export const SpaceInfo = ({
             )}
           </Badge>
         ) : (
-          user && (
+          spaceInfo.data?.user && (
             <div className="flex items-center gap-2">
-              {user.image && (
+              {spaceInfo.data?.user.image && (
                 <Image
                   unoptimized
-                  src={user.image}
-                  alt={user.name || "User"}
+                  src={spaceInfo.data?.user.image}
+                  alt={spaceInfo.data?.user.name || "User"}
                   width={24}
                   height={24}
                   className="rounded-full"
                 />
               )}
-              {user.name && (
+              {spaceInfo.data?.user.name && (
                 <span className="text-sm text-muted-foreground">
-                  {user.name}
+                  {spaceInfo.data?.user.name}
                 </span>
               )}
             </div>
@@ -76,11 +80,11 @@ export const SpaceInfo = ({
         )}
         <div className="flex items-center gap-1">
           <span>요약</span>
-          <Badge variant="secondary">{summaryCount}</Badge>
+          <Badge variant="secondary">{spaceInfo.data?.summaryCount}</Badge>
         </div>
         <div className="flex items-center gap-1">
           <span>소스</span>
-          <Badge variant="secondary">{sourceCount}</Badge>
+          <Badge variant="secondary">{spaceInfo.data?.sourceCount}</Badge>
         </div>
       </div>
     </div>

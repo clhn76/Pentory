@@ -13,10 +13,8 @@ interface SpaceSettingsProps {
 export const SpaceSettings = ({ spaceId }: SpaceSettingsProps) => {
   const trpc = useTRPC();
 
-  // 탭이 활성화되었을 때 데이터 로드
   const { data: space, status } = useQuery({
     ...trpc.spaceRouter.getSpaceSettingsById.queryOptions({ spaceId }),
-    enabled: true, // 컴포넌트가 마운트될 때 자동으로 데이터 로드
   });
 
   if (status === "pending") {

@@ -89,10 +89,12 @@ class AIService {
     modelId = this.defaultModelId,
     system,
     prompt,
+    maxTokens = 8192,
   }: {
     modelId?: string;
     system: string;
     prompt: string;
+    maxTokens?: number;
   }) {
     return this.retryWithApiKeys(async (apiKey) => {
       const genAI = createGoogleGenerativeAI({
@@ -104,6 +106,7 @@ class AIService {
         model,
         system,
         prompt,
+        maxTokens,
       });
     });
   }

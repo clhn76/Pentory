@@ -28,7 +28,10 @@ class AwsService {
   }
 
   public async invokeLambdaFunction(
-    payload: { type: string; body: Record<string, any> },
+    payload: {
+      type: "SUMMARY_SPACE" | "SUMMARY_ALL" | "SUMMARY_ITEM";
+      body: Record<string, any>;
+    },
     invocationType: "Event" | "RequestResponse" = "Event"
   ) {
     const command = new InvokeCommand({

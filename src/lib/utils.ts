@@ -6,42 +6,24 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * HTML 엔티티와 특수 문자를 일반 텍스트로 변환하는 함수
- * @param text 변환할 텍스트
- * @returns 변환된 텍스트
+ * 마크다운 문자열에서 최상위 제목과 순수 본문을 분리하여 추출합니다.
+ * @param markdown 마크다운 형식의 문자열
+ * @returns 최상위 제목과 순수 본문을 포함한 객체
  */
-export const decodeSpecialCharacters = (text: string): string => {
-  if (!text) return "";
+export const extractMarkdownContent = (
+  markdown: string
+): { title: string; content: string } => {
+  // 최상위 제목(#) 추출
+  const titleMatch = markdown.match(/^#\s+(.+)$/m);
+  const title = titleMatch ? titleMatch[1].trim() : "";
 
-  // HTML 엔티티 디코딩
-  const textarea = document.createElement("textarea");
-  textarea.innerHTML = text;
-  let decodedText = textarea.value;
+  // 모든 제목(#, ##, ### 등) 제거
+  const contentWithoutAllTitles = markdown.replace(/^#+\s.*$/gm, "");
 
-  // 특수 문자 변환 맵
-  const specialCharMap: Record<string, string> = {
-    "&#8211;": "-",
-    "&#8212;": "—",
-    "&#8216;": "'",
-    "&#8217;": "'",
-    "&#8220;": '"',
-    "&#8221;": '"',
-    "&#8230;": "...",
-    "&#8482;": "™",
-    "&#169;": "©",
-    "&#174;": "®",
-    "&nbsp;": " ",
-    "&amp;": "&",
-    "&lt;": "<",
-    "&gt;": ">",
-    "&quot;": '"',
-    "&apos;": "'",
-  };
+  // 순수 본문 내용 추출 (앞뒤 공백 제거 및 연속된 빈 줄 정리)
+  const content = contentWithoutAllTitles
+    .trim()
+    .replace(/\n\s*\n\s*\n/g, "\n\n");
 
-  // 특수 문자 변환
-  Object.entries(specialCharMap).forEach(([entity, char]) => {
-    decodedText = decodedText.replace(new RegExp(entity, "g"), char);
-  });
-
-  return decodedText;
+  return { title, content };
 };
