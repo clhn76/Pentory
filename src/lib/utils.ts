@@ -13,15 +13,24 @@ export function cn(...inputs: ClassValue[]) {
 export const extractMarkdownContent = (
   markdown: string
 ): { title: string; content: string } => {
-  // 최상위 제목(#) 추출
-  const titleMatch = markdown.match(/^#\s+(.+)$/m);
+  // 첫 번째 제목(#, ##, ###) 추출
+  const titleMatch = markdown.match(/^#{1,3}\s+(.+)$/m);
   const title = titleMatch ? titleMatch[1].trim() : "";
 
-  // 모든 제목(#, ##, ### 등) 제거
-  const contentWithoutAllTitles = markdown.replace(/^#+\s.*$/gm, "");
+  // 마크다운 요소 제거
+  const contentWithoutMarkdown = markdown
+    // 제목, 리스트, 인용구, 수평선 제거
+    .replace(/^#{1,6}\s.*$|^[-*+]\s.*$|^>\s.*$|^[-*_]{3,}$/gm, "")
+    // 코드 블록 제거
+    .replace(/```[\s\S]*?```/g, "")
+    // 인라인 코드, 강조 표시, 링크, 이미지 제거
+    .replace(
+      /`[^`]+`|[*_]{1,2}[^*_]+[*_]{1,2}|\[([^\]]+)\]\([^)]+\)|!\[([^\]]*)\]\([^)]+\)/g,
+      "$1"
+    );
 
   // 순수 본문 내용 추출 (앞뒤 공백 제거 및 연속된 빈 줄 정리)
-  const content = contentWithoutAllTitles
+  const content = contentWithoutMarkdown
     .trim()
     .replace(/\n\s*\n\s*\n/g, "\n\n");
 

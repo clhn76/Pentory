@@ -1,13 +1,14 @@
+import { SpaceSummaryDialog } from "../components/space-summaries/space-summary-dialog";
+
 interface SpaceLayoutProps {
-  summary: React.ReactNode;
   children: React.ReactNode;
 }
 
-export const SpaceLayout = ({ summary, children }: SpaceLayoutProps) => {
+export const SpaceLayout = ({ children }: SpaceLayoutProps) => {
   return (
     <div>
       {children}
-      {summary}
+      <SpaceSummaryDialog />
     </div>
   );
 };

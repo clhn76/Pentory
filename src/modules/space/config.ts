@@ -3,6 +3,7 @@ export const SPACE_HREF_PREFIX = {
   PUBLIC: "/dashboard/spaces/public",
   SUBSCRIBE: "/dashboard/spaces/subscribe",
   NEW: "/dashboard/spaces/my/new",
+  SHARE: "/share/space/summary",
 };
 
 export const GET_AI_SOURCES_SYSTEM_PROMPT = `
