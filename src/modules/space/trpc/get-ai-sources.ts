@@ -28,6 +28,7 @@ export const getAiSources = protectedProcedure
       prompt: query,
       schema: aiSourcesSchema,
       temperature: 0.5,
+      // useSearchGrounding: true,
     });
 
     console.log(aiSources);

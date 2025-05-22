@@ -24,18 +24,17 @@ export const AddSpaceSource = ({
   const getAiSources = useMutation(
     trpc.spaceRouter.getAiSources.mutationOptions({
       onSuccess: (data) => {
-        toast(`AI가 ${data.length}개의 소스를 찾았습니다.`);
+        const newSources = data.filter(
+          (source) => !sources.some((s) => s.url === source.url)
+        );
 
-        for (const aiSource of data) {
+        toast(`AI가 신규 ${newSources.length}개의 소스를 찾았습니다.`);
+
+        for (const aiSource of newSources) {
           // 최대 소스 개수 검증
           if (sources.length >= maxSourceCount) {
             toast.error("현재 플랜의 최대 소스 개수에 도달했습니다.");
             break;
-          }
-
-          // 중복 소스 검증
-          if (sources.some((source) => source.url === aiSource.url)) {
-            continue;
           }
 
           onAddSource(aiSource as SpaceFormValues["sources"][number]);
@@ -143,7 +142,7 @@ export const AddSpaceSource = ({
             </p>
             <div className="mt-3 flex items-center gap-2">
               <Input
-                placeholder="관심사 입력 (예: AI, 웹 프로그래밍, UX UI 디자인, 마케팅 등)"
+                placeholder="관심사 입력 (예: AI, 프로그래밍, 디자인, 마케팅 등)"
                 value={aiPrompt}
                 disabled={getAiSources.isPending}
                 onChange={(e) => setAiPrompt(e.target.value)}

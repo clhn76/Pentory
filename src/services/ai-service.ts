@@ -13,6 +13,7 @@ class AIService {
   private static instance: AIService;
   private apiKeys: string[] = [];
   private apiKeyCount = 13;
+  private defaultModelId = "gemini-2.0-flash";
 
   private constructor() {
     this.apiKeys = this.getShuffledApiKeys();
@@ -43,11 +44,13 @@ class AIService {
   }
 
   public streamTextWithRetry({
+    modelId = this.defaultModelId,
     system,
     prompt,
     customData,
     tools,
   }: {
+    modelId: string;
     system: string;
     prompt: string;
     customData?: JSONValue;
@@ -57,7 +60,7 @@ class AIService {
       const genAI = createGoogleGenerativeAI({
         apiKey,
       });
-      const model = genAI.languageModel("gemini-2.0-flash");
+      const model = genAI.languageModel(modelId);
 
       return createDataStreamResponse({
         execute: (dataStream) => {
@@ -83,9 +86,11 @@ class AIService {
   }
 
   public async generateTextWithRetry({
+    modelId = this.defaultModelId,
     system,
     prompt,
   }: {
+    modelId: string;
     system: string;
     prompt: string;
   }) {
@@ -93,7 +98,7 @@ class AIService {
       const genAI = createGoogleGenerativeAI({
         apiKey,
       });
-      const model = genAI.languageModel("gemini-2.0-flash");
+      const model = genAI.languageModel(modelId);
 
       return await generateText({
         model,
@@ -129,18 +134,22 @@ class AIService {
     prompt,
     schema,
     temperature,
+    modelId = this.defaultModelId,
+    useSearchGrounding = false,
   }: {
     system: string;
     prompt: string;
     schema: z.ZodSchema;
     temperature?: number;
+    modelId?: string;
+    useSearchGrounding?: boolean;
   }) {
     return this.retryWithApiKeys(async (apiKey) => {
       const genAI = createGoogleGenerativeAI({
         apiKey,
       });
-      const model = genAI.languageModel("gemini-2.0-flash", {
-        useSearchGrounding: true, // 검색 기능 사용
+      const model = genAI.languageModel(modelId, {
+        useSearchGrounding,
       });
 
       const result = await generateObject({

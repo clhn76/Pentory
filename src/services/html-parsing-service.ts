@@ -170,7 +170,7 @@ class HtmlParsingService {
         /<title>(.*?)(?:\s*-\s*YouTube)?<\/title>/
       )?.[1];
       if (channelName) {
-        channelName = this.decodeHtmlEntities(channelName);
+        channelName = this.decodeSpecialCharacters(channelName);
       }
 
       if (!channelId || !channelName) {
@@ -223,7 +223,7 @@ class HtmlParsingService {
       }
       // HTML 엔티티 디코딩
       if (title) {
-        title = this.decodeHtmlEntities(title);
+        title = this.decodeSpecialCharacters(title);
       }
 
       if (!title) {
@@ -244,20 +244,6 @@ class HtmlParsingService {
         error: "RSS URL 검증 중 오류가 발생했습니다.",
       };
     }
-  }
-
-  private decodeHtmlEntities(text: string): string {
-    const entities: { [key: string]: string } = {
-      "&amp;": "&",
-      "&lt;": "<",
-      "&gt;": ">",
-      "&quot;": '"',
-      "&#39;": "'",
-      "&#x2F;": "/",
-      "&#x60;": "`",
-      "&#x3D;": "=",
-    };
-    return text.replace(/&[^;]+;/g, (entity) => entities[entity] || entity);
   }
 
   private async fetcher(url: string) {
@@ -289,6 +275,42 @@ class HtmlParsingService {
       cache: "no-cache",
     });
     return res;
+  }
+
+  private decodeSpecialCharacters(text: string): string {
+    const entities: { [key: string]: string } = {
+      "&amp;": "&",
+      "&lt;": "<",
+      "&gt;": ">",
+      "&quot;": '"',
+      "&#39;": "'",
+      "&#x2F;": "/",
+      "&#x60;": "`",
+      "&#x3D;": "=",
+      "&nbsp;": " ",
+      "&copy;": "©",
+      "&reg;": "®",
+      "&trade;": "™",
+      "&euro;": "€",
+      "&pound;": "£",
+      "&yen;": "¥",
+      "&cent;": "¢",
+      "&deg;": "°",
+      "&plusmn;": "±",
+      "&times;": "×",
+      "&divide;": "÷",
+      "&#8211;": "–",
+      "&#8212;": "—",
+      "&#8216;": "'",
+      "&#8217;": "'",
+      "&#8220;": '"',
+      "&#8221;": '"',
+      "&#8230;": "...",
+      "&#8482;": "™",
+      "&#169;": "©",
+      "&#174;": "®",
+    };
+    return text.replace(/&[^;]+;/g, (entity) => entities[entity] || entity);
   }
 }
 
